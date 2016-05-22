@@ -1,0 +1,19 @@
+{
+  "name": "chrome-webstore-upload",
+  "version": "0.1.0",
+  "description": "Programatically publish changes to the Chrome Webstore",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "chrome",
+    "publish",
+    "webstore"
+  ],
+  "author": "Andrew Levine",
+  "license": "MIT",
+  "dependencies": {
+    "got": "^6.3.0"
+  }
+}
