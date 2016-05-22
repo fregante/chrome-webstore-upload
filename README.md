@@ -47,7 +47,7 @@ webStore.fetchToken().then(token => {
 
 ## Tips
 
-- If you plan to upload _and_ publish at the same time, use the `fetchToken` method, and pass it to both `uploadExisting` and `publish` as the optional second paramater. This will avoid those methods making duplicate calls for new tokens.
+- If you plan to upload _and_ publish at the same time, use the `fetchToken` method, and pass it to both `uploadExisting` and `publish` as the optional second parameter. This will avoid those methods making duplicate calls for new tokens.
 
 ## Prior Art
 - [grunt-webstore-upload](https://github.com/c301/grunt-webstore-upload)

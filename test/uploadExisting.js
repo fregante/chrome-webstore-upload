@@ -72,3 +72,19 @@ test.serial('Upload uses token for auth', async t => {
 
     await client.uploadExisting({});
 });
+
+test.serial('Uses provided extension ID', async t => {
+    t.plan(1);
+
+    const { client, sandbox } = t.context;
+    const extensionId = client.extensionId;
+
+    sandbox.stub(got, 'put', (uri) => {
+        const hasId = new RegExp(`\/items\/${extensionId}`).test(uri);
+        t.true(hasId);
+
+        return Promise.resolve({});
+    });
+
+    await client.uploadExisting({}, 'token');
+});
