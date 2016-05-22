@@ -34,4 +34,4 @@ test.serial('Only returns token from response body', async t => {
     t.is(await client.fetchToken(), accessToken);
 });
 
-t.todo('Request includes clientId, clientSecret, and refreshToken');
+test.todo('Request includes clientId, clientSecret, and refreshToken');
