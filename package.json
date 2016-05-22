@@ -4,7 +4,7 @@
   "description": "Programatically upload + publish changes to the Chrome Webstore",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "ava"
   },
   "keywords": [
     "chrome",
@@ -15,5 +15,9 @@
   "license": "MIT",
   "dependencies": {
     "got": "^6.3.0"
+  },
+  "devDependencies": {
+    "ava": "^0.14.0",
+    "sinon": "^1.17.4"
   }
 }
