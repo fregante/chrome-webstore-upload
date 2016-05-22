@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "Programatically upload + publish changes to the Chrome Webstore",
   "main": "index.js",
+  "engines" : {
+    "node" : ">=6.0.0"
+  },
   "scripts": {
     "test": "ava"
   },

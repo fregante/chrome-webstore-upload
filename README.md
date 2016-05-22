@@ -1,6 +1,13 @@
-# Web Store Publish
+# Web Store Upload
+
+![CI status](https://travis-ci.org/DrewML/chrome-webstore-upload.svg)
 
 A small node.js module to upload/publish extensions to the [Chrome Web Store](https://chrome.google.com/webstore/category/extensions).
+
+## Install
+```
+npm install --save-dev chrome-webstore-upload
+```
 
 ## Usage
 
