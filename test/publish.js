@@ -79,8 +79,6 @@ test.serial('Publish uses token for auth', async t => {
     await client.publish(undefined, token);
 });
 
-test.todo('Publish only returns response body on success');
-
 test.serial('Uses provided extension ID', async t => {
     t.plan(1);
 
@@ -96,3 +94,5 @@ test.serial('Uses provided extension ID', async t => {
 
     await client.publish(undefined, 'token');
 });
+
+test.todo('Publish only returns response body on success');
