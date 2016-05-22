@@ -15,14 +15,15 @@ class APIClient {
         this.refreshToken = refreshToken;
     }
 
-    uploadExisting(readStream) {
+    uploadExisting(readStream, token) {
         if (!readStream) {
             return Promise.reject(new Error('Read stream missing'));
         }
 
         const { extensionId } = this;
+        const eventualToken = token ? Promise.resolve(token) : this.fetchToken();
 
-        return this.fetchToken().then(token => {
+        return eventualToken.then(token => {
             return got.put(uploadExistingURI(extensionId), {
                 headers: this._headers(token),
                 body: readStream,
@@ -31,10 +32,11 @@ class APIClient {
         });
     }
 
-    publish(target = 'default') {
+    publish(target = 'default', token) {
         const { extensionId } = this;
+        const eventualToken = token ? Promise.resolve(token) : this.fetchToken();
 
-        return this.fetchToken().then(token => {
+        return eventualToken.then(token => {
             return got.post(publishURI(extensionId, target), {
                 headers: this._headers(token),
                 json: true
