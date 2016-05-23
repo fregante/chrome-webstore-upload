@@ -7,12 +7,22 @@ const publishURI = (id, target) => (
     `${rootURI}/chromewebstore/v1.1/items/${id}/publish?publishTarget=${target}`
 );
 
+const requiredFields = [
+    'extensionId',
+    'clientId',
+    'clientSecret',
+    'refreshToken'
+];
+
 class APIClient {
-    constructor({ extensionId, clientId, clientSecret, refreshToken }) {
-        this.extensionId = extensionId;
-        this.clientId = clientId;
-        this.clientSecret = clientSecret;
-        this.refreshToken = refreshToken;
+    constructor(opts) {
+        requiredFields.forEach(field => {
+            if (!opts[field]) {
+                throw new Error(`Option "${field}" is required`);
+            }
+
+            this[field] = opts[field];
+        });
     }
 
     uploadExisting(readStream, token) {
