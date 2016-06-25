@@ -12,7 +12,11 @@
   "keywords": [
     "chrome",
     "publish",
-    "webstore"
+    "webstore",
+    "extension",
+    "deploy",
+    "update",
+    "upload"
   ],
   "author": "Andrew Levine",
   "license": "MIT",
