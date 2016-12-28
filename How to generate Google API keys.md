@@ -49,4 +49,4 @@ It's a wizard to create and copy a `curl` into your clipboard:
 
     <img width="400" alt="access token" src="https://cloud.githubusercontent.com/assets/1402241/21518331/9b7e3b42-cc9a-11e6-8d65-cde5ba5ea105.png">
 
-0. Done. Now you should have ✅ `clientId`, ✅ `clientSecret` and ✅ `refreshToken`
+0. Done. Now you should have ✅ `clientId`, ✅ `clientSecret` and ✅ `refreshToken`. You can use these for all your extensions, but don't share them!
