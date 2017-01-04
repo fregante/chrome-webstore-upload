@@ -11,6 +11,10 @@ If you're looking to upload/publish from the CLI, then use [this](https://github
 npm install --save-dev chrome-webstore-upload
 ```
 
+## Setup
+
+You will need a Google API `clientId`, a `clientSecret` and a `refreshToken`. Read [the guide.](How to generate Google API keys.md)
+
 ## Usage
 
 All methods return an ES2015-compliant promise.
