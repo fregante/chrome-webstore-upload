@@ -4,7 +4,7 @@
 
 A small node.js module to upload/publish extensions to the [Chrome Web Store](https://chrome.google.com/webstore/category/extensions).
 
-If you're looking to upload/publish from the CLI, then use [this](https://github.com/DrewML/chrome-webstore-upload-cli), which wraps Web Store Upload.
+If you're looking to upload/publish from the CLI, then use [chrome-webstore-upload-cli](https://github.com/DrewML/chrome-webstore-upload-cli).
 
 ## Install
 ```
