@@ -45,7 +45,7 @@ It's a wizard to create and copy a `curl` into your clipboard:
 
 
 0. Paste the generated code in your terminal and run it.
-0. The `access_code` you see is actually our ✅ `refreshToken`:
+0. Save your ✅ `refreshToken`:
 
     <img width="400" alt="access token" src="https://cloud.githubusercontent.com/assets/1402241/21518331/9b7e3b42-cc9a-11e6-8d65-cde5ba5ea105.png">
 
