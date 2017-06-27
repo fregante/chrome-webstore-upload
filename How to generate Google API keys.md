@@ -41,7 +41,7 @@ Here's how to get its 3 access keys: `clientId`, `clientSecret`, `refreshToken`
 0. Run this in your browser console.  
 It's a wizard to create and copy a `curl` into your clipboard:
 
-        copy(`curl "https://accounts.google.com/o/oauth2/token" -d "client_id=${encodeURIComponent(prompt('Enter your clientId'))}&client_secret=${encodeURIComponent(prompt('Enter your clientSecret'))}&code=${encodeURIComponent(prompt('Enter your authcode'))}&grant_type=authorization_code&redirect_uri=urn:ietf:wg:oauth:2.0:oob"`)
+        copy(`curl "https://accounts.google.com/o/oauth2/token" -d "client_id=${encodeURIComponent(prompt('Enter your clientId'))}&client_secret=${encodeURIComponent(prompt('Enter your clientSecret'))}&code=${encodeURIComponent(prompt('Enter your authcode'))}&grant_type=authorization_code&redirect_uri=urn:ietf:wg:oauth:2.0:oob"`);alert('The curl has been copied. Paste it into your terminal.')
 
 
 0. Paste the generated code in your terminal and run it.
