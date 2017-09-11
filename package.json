@@ -2,6 +2,7 @@
   "name": "chrome-webstore-upload",
   "version": "0.2.1",
   "description": "Programatically upload + publish changes to the Chrome Webstore",
+  "repository": "DrewML/chrome-webstore-upload",
   "engines": {
     "node": ">=6.0.0"
   },
