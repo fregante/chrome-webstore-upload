@@ -1,3 +1,5 @@
+"use strict";
+
 const got = require('got');
 
 const rootURI = 'https://www.googleapis.com';
@@ -30,7 +32,7 @@ class APIClient {
             return Promise.reject(new Error('Read stream missing'));
         }
 
-        const { extensionId } = this;
+        const extensionId = this.extensionId;
         const eventualToken = token ? Promise.resolve(token) : this.fetchToken();
 
         return eventualToken.then(token => {
@@ -42,8 +44,9 @@ class APIClient {
         });
     }
 
-    publish(target = 'default', token) {
-        const { extensionId } = this;
+    publish(target, token) {
+        target = target || 'default';
+        const extensionId = this.extensionId;
         const eventualToken = token ? Promise.resolve(token) : this.fetchToken();
 
         return eventualToken.then(token => {
@@ -55,7 +58,9 @@ class APIClient {
     }
 
     fetchToken() {
-        const { clientId, clientSecret, refreshToken } = this;
+        const clientId = this.clientId;
+        const clientSecret = this.clientSecret;
+        const refreshToken = this.refreshToken;
 
         return got.post(refreshTokenURI, {
             body: {
@@ -66,7 +71,7 @@ class APIClient {
                 redirect_uri: 'urn:ietf:wg:oauth:2.0:oob'
             },
             json: true
-        }).then(this._extractBody).then(({ access_token }) => access_token);
+        }).then(this._extractBody).then((body) => body.access_token);
     }
 
     _headers(token) {
@@ -76,12 +81,12 @@ class APIClient {
         };
     }
 
-    _extractBody({ body }) {
-        return body;
+    _extractBody(resp) {
+        return resp.body;
     }
 }
 
 
-module.exports = function(...args) {
-    return new APIClient(...args);
+module.exports = function(opts) {
+    return new APIClient(opts);
 };
