@@ -3,9 +3,7 @@ const got = require('got');
 const rootURI = 'https://www.googleapis.com';
 const refreshTokenURI = 'https://accounts.google.com/o/oauth2/token';
 const uploadExistingURI = id => `${rootURI}/upload/chromewebstore/v1.1/items/${id}`;
-const publishURI = (id, target) => (
-    `${rootURI}/chromewebstore/v1.1/items/${id}/publish?publishTarget=${target}`
-);
+const publishURI = id => `${rootURI}/chromewebstore/v1.1/items/${id}/publish`;
 
 const requiredFields = [
     'extensionId',
@@ -42,13 +40,17 @@ class APIClient {
         });
     }
 
-    publish(target = 'default', token) {
+    publish(target, token) {
         const { extensionId } = this;
         const eventualToken = token ? Promise.resolve(token) : this.fetchToken();
 
         return eventualToken.then(token => {
-            return got.post(publishURI(extensionId, target), {
+            return got.post(publishURI(extensionId), {
                 headers: this._headers(token),
+                body: target === 'trustedTesters' ? {
+					publish_to_trusted_testers: true,
+					target: 'trustedTesters'
+                } : {},
                 json: true
             }).then(this._extractBody);
         });
