@@ -1,7 +1,7 @@
 const got = require('got');
 
 const rootURI = 'https://www.googleapis.com';
-const refreshTokenURI = 'https://accounts.google.com/o/oauth2/token';
+const refreshTokenURI = 'https://www.googleapis.com/oauth2/v4/token';
 const uploadExistingURI = id => `${rootURI}/upload/chromewebstore/v1.1/items/${id}`;
 const publishURI = (id, target) => (
     `${rootURI}/chromewebstore/v1.1/items/${id}/publish?publishTarget=${target}`
@@ -62,8 +62,7 @@ class APIClient {
                 client_id: clientId,
                 client_secret: clientSecret,
                 refresh_token: refreshToken,
-                grant_type: 'refresh_token',
-                redirect_uri: 'urn:ietf:wg:oauth:2.0:oob'
+                grant_type: 'refresh_token'
             },
             json: true
         }).then(this._extractBody).then(({ access_token }) => access_token);
