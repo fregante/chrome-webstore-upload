@@ -24,6 +24,7 @@
     "got": "^6.3.0"
   },
   "devDependencies": {
+    "@types/node": "^9.6.2",
     "ava": "^0.14.0",
     "sinon": "^1.17.4"
   }
