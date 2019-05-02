@@ -65,7 +65,7 @@ class APIClient {
     publish(target = 'default', token) {
         const { extensionId } = this;
 
-        if (!extensionId) throw new Error('Option "extensionId" is required to call uploadExisting');
+        if (!extensionId) throw new Error('Option "extensionId" is required to call publish');
 
         const eventualToken = token ? Promise.resolve(token) : this.fetchToken();
 
