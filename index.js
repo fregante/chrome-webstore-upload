@@ -22,6 +22,7 @@ class APIClient {
             }
 
             this[field] = opts[field];
+            this.extensionId = opts.extensionId;
         });
     }
 
