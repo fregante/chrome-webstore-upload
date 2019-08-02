@@ -6,12 +6,12 @@ Here's how to get its 3 access keys: `clientId`, `clientSecret`, `refreshToken`
 
 *Note:* the names you enter here don't really matter.
 
-0. Visit https://console.developers.google.com/apis/api/chromewebstore/overview
+0. Visit https://console.developers.google.com/apis/api/chromewebstore.googleapis.com/overview
 0. Create a project:
 
     <img width="296" alt="chrome-apis-create-project" src="https://cloud.githubusercontent.com/assets/1402241/21517725/55e5c626-cc96-11e6-9b55-ec9c80e10ec4.png">
 0. Enter a name (e.g. `webstore-yourextensionname`)
-0. Visit https://console.developers.google.com/apis/api/chromewebstore/overview again
+0. Visit https://console.developers.google.com/apis/api/chromewebstore.googleapis.com/overview again
 0. Enable the API:
 
     <img width="400" alt="chrome-apis-enable-webstore" src="https://cloud.githubusercontent.com/assets/1402241/21517842/2a9f36a4-cc97-11e6-8ffa-ad49ac2ca3ce.png">
