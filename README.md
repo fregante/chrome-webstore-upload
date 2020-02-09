@@ -13,7 +13,7 @@ npm install --save-dev chrome-webstore-upload
 
 ## Setup
 
-You will need a Google API `clientId`, a `clientSecret` and a `refreshToken`. Read [the guide.](How to generate Google API keys.md)
+You will need a Google API `clientId`, a `clientSecret` and a `refreshToken`. Read [the guide](./How%20to%20generate%20Google%20API%20keys.md).
 
 ## Usage
 
