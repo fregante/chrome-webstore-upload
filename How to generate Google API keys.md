@@ -16,7 +16,7 @@ Here's how to get its 3 access keys: `clientId`, `clientSecret`, `refreshToken`
 0. Select on **External** and **Create**
 0. Only enter the Application name (e.g. `chrome-webstore-upload`) and **Save**
 
-	<img width="475" alt="Consent screen configuration" src="https://user-images.githubusercontent.com/1402241/77865809-82ff7d80-7230-11ea-8a96-e381d55524c5.png">
+	> <img width="475" alt="Consent screen configuration" src="https://user-images.githubusercontent.com/1402241/77865809-82ff7d80-7230-11ea-8a96-e381d55524c5.png">
 
 0. Visit https://console.developers.google.com/apis/library/chromewebstore.googleapis.com
 0. Click **Enable**
@@ -27,16 +27,16 @@ Here's how to get its 3 access keys: `clientId`, `clientSecret`, `refreshToken`
 
 0. Select **Other**, enter `chrome-webstore-upload` and click **Create** 
 
-    > <img width="187" alt="Configure client type" src="https://cloud.githubusercontent.com/assets/1402241/21517952/d1f36fce-cc97-11e6-92c0-de4485d97736.png">
+	> <img width="187" alt="Configure client type" src="https://cloud.githubusercontent.com/assets/1402241/21517952/d1f36fce-cc97-11e6-92c0-de4485d97736.png">
 
 0. Save your ✅ `clientId` and ✅ `clientSecret`, these are your 2 of your 3 keys.
 0. Place your `clientId` in this URL and open it:
 
-        https://accounts.google.com/o/oauth2/auth?client_id=YOUR_CLIENT_ID&response_type=code&scope=https://www.googleapis.com/auth/chromewebstore&redirect_uri=urn:ietf:wg:oauth:2.0:oob
+	`https://accounts.google.com/o/oauth2/auth?client_id=YOUR_CLIENT_ID&response_type=code&scope=https://www.googleapis.com/auth/chromewebstore&redirect_uri=urn:ietf:wg:oauth:2.0:oob`
 
 0. Follow its steps and warnings (this is your own peronal app) and wait on the last page:
 
-    > <img width="1021" alt="Last page of OAuth" src="https://user-images.githubusercontent.com/1402241/77866731-79781480-7234-11ea-8f81-c533846d89ea.png">
+	<img width="521" alt="Last page of OAuth" src="https://user-images.githubusercontent.com/1402241/77866731-79781480-7234-11ea-8f81-c533846d89ea.png">
 
 0. Run this in your browser console **on that last page**. It's a wizard to create your `refresh_token`:
 
