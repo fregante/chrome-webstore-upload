@@ -6,28 +6,27 @@ Here's how to get its 3 access keys: `clientId`, `clientSecret`, `refreshToken`
 
 *Note:* the names you enter here don't really matter.
 
-0. Visit https://console.developers.google.com/apis/api/chromewebstore.googleapis.com/overview
+0. Visit https://console.developers.google.com/apis/credentials
 0. Create a project:
 
-    <img width="296" alt="chrome-apis-create-project" src="https://cloud.githubusercontent.com/assets/1402241/21517725/55e5c626-cc96-11e6-9b55-ec9c80e10ec4.png">
-0. Enter a name (e.g. `webstore-yourextensionname`)
-0. Visit https://console.developers.google.com/apis/api/chromewebstore.googleapis.com/overview again
-0. Enable the API:
+	<img width="772" alt="Google APIs: Create project" src="https://user-images.githubusercontent.com/1402241/77865620-9a8a3680-722f-11ea-99cb-b09e5c0c11ec.png">
 
-    <img width="400" alt="chrome-apis-enable-webstore" src="https://cloud.githubusercontent.com/assets/1402241/21517842/2a9f36a4-cc97-11e6-8ffa-ad49ac2ca3ce.png">
+0. Enter `chrome-webstore-upload` and **Create**
+0. Click on **Configure consent screen**
+0. Only enter the Application name (e.g. `chrome-webstore-upload`) and **Save**
 
-0. Open **Credentials** > **Create credentials** > **OAuth client ID**:
+	<img width="475" alt="Consent screen configuration" src="https://user-images.githubusercontent.com/1402241/77865809-82ff7d80-7230-11ea-8a96-e381d55524c5.png">
 
-    <img width="400" alt="create-credentials" src="https://cloud.githubusercontent.com/assets/1402241/21517881/64f727f8-cc97-11e6-9c6b-b347b71352bf.png">
+0. Visit https://console.developers.google.com/apis/credentials again
+0. Click **Create credentials** > **OAuth client ID**:
 
-0. Click on **Configure consent screen**:
+	<img width="771" alt="Create credentials" src="https://user-images.githubusercontent.com/1402241/77865679-e89f3a00-722f-11ea-942d-5245091f22b8.png">
 
-    > <img width="400" alt="configure consent screen" src="https://cloud.githubusercontent.com/assets/1402241/21517907/92640e0e-cc97-11e6-93f7-d077664eead9.png">
+0. Select **Other** 
 
-0. Enter a product name (e.g. `yourextensionname`) and save
-0. Select **Other** and click **Create** 
+    > <img width="187" alt="Configure client type" src="https://cloud.githubusercontent.com/assets/1402241/21517952/d1f36fce-cc97-11e6-92c0-de4485d97736.png">
 
-    > <img width="187" alt="client type id" src="https://cloud.githubusercontent.com/assets/1402241/21517952/d1f36fce-cc97-11e6-92c0-de4485d97736.png">
+0. Enter a product name (e.g. `chrome-webstore-upload`) and click **Create** 
 
 0. Save your ✅ `clientId` and ✅ `clientSecret`, these are your keys.
 0. Place your `clientId` in this URL and open it:
