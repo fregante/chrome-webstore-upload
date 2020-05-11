@@ -36,8 +36,7 @@ class APIClient {
         return eventualToken.then(token => {
             return got.put(uploadExistingURI(extensionId), {
                 headers: this._headers(token),
-                body: readStream,
-                json: true
+                body: readStream
             }).then(this._extractBody);
         });
     }
