@@ -25,7 +25,7 @@ Here's how to get its 3 access keys: `clientId`, `clientSecret`, `refreshToken`
 
 	<img width="771" alt="Create credentials" src="https://user-images.githubusercontent.com/1402241/77865679-e89f3a00-722f-11ea-942d-5245091f22b8.png">
 
-0. Select **Other**, enter `chrome-webstore-upload` and click **Create** 
+0. Select **Other** (or **Desktop app** if available), enter `chrome-webstore-upload` and click **Create** 
 
 	> <img width="187" alt="Configure client type" src="https://cloud.githubusercontent.com/assets/1402241/21517952/d1f36fce-cc97-11e6-92c0-de4485d97736.png">
 
