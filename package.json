@@ -1,6 +1,6 @@
 {
   "name": "chrome-webstore-upload",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "license": "MIT",
   "description": "Programatically upload + publish changes to the Chrome Webstore",
   "repository": "DrewML/chrome-webstore-upload",
@@ -20,7 +20,6 @@
     "upload"
   ],
   "author": "Andrew Levine",
-  "license": "MIT",
   "dependencies": {
     "got": "^11.5.2"
   },
