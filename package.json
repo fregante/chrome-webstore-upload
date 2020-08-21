@@ -22,7 +22,7 @@
   "author": "Andrew Levine",
   "license": "MIT",
   "dependencies": {
-    "got": "^9.6.0"
+    "got": "^11.5.2"
   },
   "devDependencies": {
     "ava": "^0.14.0",
