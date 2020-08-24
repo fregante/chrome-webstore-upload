@@ -28,7 +28,9 @@ test.serial('Publish uses default target when not provided', async t => {
         const { query } = url.parse(uri, true);
         t.is(query.publishTarget, defaultTarget);
 
-        return Promise.resolve({});
+        return {
+            json: sandbox.stub().returns(Promise.resolve({}))
+        };
     });
 
     await client.publish(undefined, 'token');
@@ -44,7 +46,9 @@ test.serial('Publish uses target when provided', async t => {
         const { query } = url.parse(uri, true);
         t.is(query.publishTarget, target);
 
-        return Promise.resolve({});
+        return {
+            json: sandbox.stub().returns(Promise.resolve({}))
+        };
     });
 
     await client.publish(target, 'token');
@@ -58,7 +62,9 @@ test.serial('Publish does not fetch token when provided', async t => {
             return t.fail('Token should not have been fetched');
         }
 
-        return Promise.resolve({});
+        return {
+            json: sandbox.stub().returns(Promise.resolve({}))
+        };
     });
 
     await client.publish(undefined, 'token');
@@ -73,7 +79,9 @@ test.serial('Publish uses token for auth', async t => {
 
     sandbox.stub(got, 'post', (uri, { headers }) => {
         t.is(headers.Authorization, `Bearer ${token}`);
-        return Promise.resolve({});
+        return {
+            json: sandbox.stub().returns(Promise.resolve({}))
+        };
     });
 
     await client.publish(undefined, token);
@@ -89,7 +97,9 @@ test.serial('Uses provided extension ID', async t => {
         const hasId = new RegExp(`\/items\/${extensionId}`).test(uri);
         t.true(hasId);
 
-        return Promise.resolve({});
+        return {
+            json: sandbox.stub().returns(Promise.resolve({}))
+        };
     });
 
     await client.publish(undefined, 'token');
