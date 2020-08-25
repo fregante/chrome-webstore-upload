@@ -1,7 +1,7 @@
-import test from 'ava';
-import got from 'got';
-import sinon from 'sinon';
-import getClient from './helpers/get-client';
+const test = require('ava');
+const got = require('got');
+const sinon = require('sinon');
+const getClient = require('./helpers/get-client');
 
 function stubTokenRequest(t, token = 'token') {
     t.context.sandbox.stub(got, 'post').returns({
@@ -13,7 +13,7 @@ function stubTokenRequest(t, token = 'token') {
 
 test.beforeEach('Setup Sinon Sandbox', t => {
     t.context = {
-        sandbox: sinon.sandbox.create(),
+        sandbox: sinon.createSandbox(),
         client: getClient()
     }
 });
@@ -53,7 +53,7 @@ test.serial('Upload only returns response body on success', async t => {
 test.serial('Upload does not fetch token when provided', async t => {
     const { client, sandbox } = t.context;
 
-    sandbox.stub(got, 'post', () => {
+    sandbox.stub(got, 'post').callsFake(() => {
         t.fail('Token should not have been fetched');
     });
 
@@ -72,7 +72,7 @@ test.serial('Upload uses token for auth', async t => {
     const token = 'token';
 
     stubTokenRequest(t, token);
-    sandbox.stub(got, 'put', (uri, { headers }) => {
+    sandbox.stub(got, 'put').callsFake((uri, { headers }) => {
         t.is(headers.Authorization, `Bearer ${token}`);
         return {
             json: sandbox.stub().returns(Promise.resolve({}))
@@ -88,7 +88,7 @@ test.serial('Uses provided extension ID', async t => {
     const { client, sandbox } = t.context;
     const extensionId = client.extensionId;
 
-    sandbox.stub(got, 'put', (uri) => {
+    sandbox.stub(got, 'put').callsFake((uri) => {
         const hasId = new RegExp(`\/items\/${extensionId}`).test(uri);
         t.true(hasId);
 
