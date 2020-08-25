@@ -36,9 +36,8 @@ class APIClient {
         return eventualToken.then(token => {
             return got.put(uploadExistingURI(extensionId), {
                 headers: this._headers(token),
-                body: readStream,
-                json: true
-            }).then(this._extractBody);
+                body: readStream
+            }).json();
         });
     }
 
@@ -48,9 +47,8 @@ class APIClient {
 
         return eventualToken.then(token => {
             return got.post(publishURI(extensionId, target), {
-                headers: this._headers(token),
-                json: true
-            }).then(this._extractBody);
+                headers: this._headers(token)
+            }).json();
         });
     }
 
@@ -58,14 +56,13 @@ class APIClient {
         const { clientId, clientSecret, refreshToken } = this;
 
         return got.post(refreshTokenURI, {
-            body: {
+            json: {
                 client_id: clientId,
                 client_secret: clientSecret,
                 refresh_token: refreshToken,
                 grant_type: 'refresh_token'
-            },
-            json: true
-        }).then(this._extractBody).then(({ access_token }) => access_token);
+            }
+        }).json().then(({ access_token }) => access_token);
     }
 
     _headers(token) {
@@ -73,10 +70,6 @@ class APIClient {
             Authorization: `Bearer ${token}`,
             'x-goog-api-version': '2'
         };
-    }
-
-    _extractBody({ body }) {
-        return body;
     }
 }
 

@@ -23,12 +23,10 @@ test.serial('Only returns token from response body', async t => {
     const { client, sandbox } = t.context;
     const accessToken = 'access-token';
 
-    sandbox.stub(got, 'post', (uri) => {
-        return Promise.resolve({
-            body: {
-                access_token: accessToken
-            }
-        });
+    sandbox.stub(got, 'post').returns({
+        json: sandbox.stub().returns(Promise.resolve({
+            access_token: accessToken
+        }))
     });
 
     t.is(await client.fetchToken(), accessToken);

@@ -4,9 +4,11 @@ import sinon from 'sinon';
 import getClient from './helpers/get-client';
 
 function stubTokenRequest(t, token = 'token') {
-    t.context.sandbox.stub(got, 'post').returns(Promise.resolve({
-        body: { access_token: token }
-    }));
+    t.context.sandbox.stub(got, 'post').returns({
+        json: t.context.sandbox.stub().returns(Promise.resolve({
+            access_token: token
+        }))
+    });
 }
 
 test.beforeEach('Setup Sinon Sandbox', t => {
@@ -38,7 +40,10 @@ test.serial('Upload only returns response body on success', async t => {
     const { client, sandbox } = t.context;
     const body = { foo: 'bar' };
 
-    sandbox.stub(got, 'put').returns(Promise.resolve({ body }));
+    sandbox.stub(got, 'put').returns({
+        json: sandbox.stub().returns(Promise.resolve(body))
+    });
+
     stubTokenRequest(t);
 
     const res = await client.uploadExisting({});
@@ -52,7 +57,9 @@ test.serial('Upload does not fetch token when provided', async t => {
         t.fail('Token should not have been fetched');
     });
 
-    sandbox.stub(got, 'put').returns(Promise.resolve({}));
+    sandbox.stub(got, 'put').returns({
+        json: sandbox.stub().returns(Promise.resolve({}))
+    });
 
     await client.uploadExisting({}, 'token');
     t.pass();
@@ -67,7 +74,9 @@ test.serial('Upload uses token for auth', async t => {
     stubTokenRequest(t, token);
     sandbox.stub(got, 'put', (uri, { headers }) => {
         t.is(headers.Authorization, `Bearer ${token}`);
-        return Promise.resolve({});
+        return {
+            json: sandbox.stub().returns(Promise.resolve({}))
+        };
     });
 
     await client.uploadExisting({});
@@ -83,7 +92,9 @@ test.serial('Uses provided extension ID', async t => {
         const hasId = new RegExp(`\/items\/${extensionId}`).test(uri);
         t.true(hasId);
 
-        return Promise.resolve({});
+        return {
+            json: sandbox.stub().returns(Promise.resolve({}))
+        };
     });
 
     await client.uploadExisting({}, 'token');
