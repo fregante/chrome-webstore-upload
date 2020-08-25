@@ -7,7 +7,7 @@ test.beforeEach('Setup Sinon Sandbox', t => {
     t.context = {
         sandbox: sinon.createSandbox(),
         client: getClient()
-    }
+    };
 });
 
 test.afterEach('Reset Sinon Sandbox', t => {
@@ -20,7 +20,7 @@ test.afterEach('Reset Sinon Sandbox', t => {
 test.serial('Only returns token from response body', async t => {
     t.plan(1);
 
-    const { client, sandbox } = t.context;
+    const {client, sandbox} = t.context;
     const accessToken = 'access-token';
 
     sandbox.stub(got, 'post').returns({

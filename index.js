@@ -15,54 +15,50 @@ const requiredFields = [
 ];
 
 class APIClient {
-    constructor(opts) {
+    constructor(options) {
         requiredFields.forEach(field => {
-            if (!opts[field]) {
+            if (!options[field]) {
                 throw new Error(`Option "${field}" is required`);
             }
 
-            this[field] = opts[field];
+            this[field] = options[field];
         });
     }
 
-    uploadExisting(readStream, token) {
+    async uploadExisting(readStream, token = this.fetchToken()) {
         if (!readStream) {
-            return Promise.reject(new Error('Read stream missing'));
+            throw new Error('Read stream missing');
         }
 
-        const { extensionId } = this;
-        const eventualToken = token ? Promise.resolve(token) : this.fetchToken();
+        const {extensionId} = this;
 
-        return eventualToken.then(token => {
-            return got.put(uploadExistingURI(extensionId), {
-                headers: this._headers(token),
-                body: readStream
-            }).json();
-        });
+        return got.put(uploadExistingURI(extensionId), {
+            headers: this._headers(await token),
+            body: readStream
+        }).json();
     }
 
-    publish(target = 'default', token) {
-        const { extensionId } = this;
-        const eventualToken = token ? Promise.resolve(token) : this.fetchToken();
+    async publish(target = 'default', token = this.fetchToken()) {
+        const {extensionId} = this;
 
-        return eventualToken.then(token => {
-            return got.post(publishURI(extensionId, target), {
-                headers: this._headers(token)
-            }).json();
-        });
+        return got.post(publishURI(extensionId, target), {
+            headers: this._headers(await token)
+        }).json();
     }
 
-    fetchToken() {
-        const { clientId, clientSecret, refreshToken } = this;
+    async fetchToken() {
+        const {clientId, clientSecret, refreshToken} = this;
 
-        return got.post(refreshTokenURI, {
+        const response = await got.post(refreshTokenURI, {
             json: {
                 client_id: clientId,
                 client_secret: clientSecret,
                 refresh_token: refreshToken,
                 grant_type: 'refresh_token'
             }
-        }).json().then(({ access_token }) => access_token);
+        }).json();
+
+        return response.access_token;
     }
 
     _headers(token) {
@@ -73,7 +69,6 @@ class APIClient {
     }
 }
 
-
-module.exports = function(...args) {
+module.exports = function (...args) {
     return new APIClient(...args);
 };
