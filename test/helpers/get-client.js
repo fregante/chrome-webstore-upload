@@ -1,4 +1,4 @@
-const webStoreUpload = require('../../');
+const webStoreUpload = require('../..');
 
 module.exports = function getClient() {
     return webStoreUpload({

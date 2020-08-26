@@ -5,7 +5,7 @@
   "description": "Programatically upload + publish changes to the Chrome Webstore",
   "repository": "DrewML/chrome-webstore-upload",
   "engines": {
-    "node": ">=6.0.0"
+    "node": ">=10.19.0"
   },
   "scripts": {
     "test": "ava"
@@ -24,7 +24,20 @@
     "got": "^11.5.2"
   },
   "devDependencies": {
-    "ava": "^0.14.0",
-    "sinon": "^1.17.4"
+    "ava": "^3.12.1",
+    "sinon": "^9.0.3",
+    "xo": "^0.33.0"
+  },
+  "xo": {
+    "space": 4,
+    "rules": {
+      "camelcase": "off",
+      "func-names": "off",
+      "object-curly-spacing": [
+        "error",
+        "always"
+      ],
+      "unicorn/filename-case": "off"
+    }
   }
 }

@@ -1,11 +1,11 @@
-import test from 'ava';
-import got from 'got';
-import sinon from 'sinon';
-import getClient from './helpers/get-client';
+const test = require('ava');
+const got = require('got');
+const sinon = require('sinon');
+const getClient = require('./helpers/get-client');
 
 function stubTokenRequest(t, token = 'token') {
     t.context.sandbox.stub(got, 'post').returns({
-        json: t.context.sandbox.stub().returns(Promise.resolve({
+        json: t.context.sandbox.stub().resolves(({
             access_token: token
         }))
     });
@@ -13,9 +13,9 @@ function stubTokenRequest(t, token = 'token') {
 
 test.beforeEach('Setup Sinon Sandbox', t => {
     t.context = {
-        sandbox: sinon.sandbox.create(),
+        sandbox: sinon.createSandbox(),
         client: getClient()
-    }
+    };
 });
 
 test.afterEach('Reset Sinon Sandbox', t => {
@@ -31,8 +31,8 @@ test.serial('Upload fails when file stream not provided', async t => {
     try {
         await client.uploadExisting();
         t.fail('Did not reject promise when file stream missing');
-    } catch(err) {
-        t.is(err.message, 'Read stream missing');
+    } catch (error) {
+        t.is(error.message, 'Read stream missing');
     }
 });
 
@@ -41,24 +41,24 @@ test.serial('Upload only returns response body on success', async t => {
     const body = { foo: 'bar' };
 
     sandbox.stub(got, 'put').returns({
-        json: sandbox.stub().returns(Promise.resolve(body))
+        json: sandbox.stub().resolves((body))
     });
 
     stubTokenRequest(t);
 
-    const res = await client.uploadExisting({});
-    t.deepEqual(res, body);
+    const response = await client.uploadExisting({});
+    t.deepEqual(response, body);
 });
 
 test.serial('Upload does not fetch token when provided', async t => {
     const { client, sandbox } = t.context;
 
-    sandbox.stub(got, 'post', () => {
+    sandbox.stub(got, 'post').callsFake(() => {
         t.fail('Token should not have been fetched');
     });
 
     sandbox.stub(got, 'put').returns({
-        json: sandbox.stub().returns(Promise.resolve({}))
+        json: sandbox.stub().resolves(({}))
     });
 
     await client.uploadExisting({}, 'token');
@@ -72,10 +72,10 @@ test.serial('Upload uses token for auth', async t => {
     const token = 'token';
 
     stubTokenRequest(t, token);
-    sandbox.stub(got, 'put', (uri, { headers }) => {
+    sandbox.stub(got, 'put').callsFake((uri, { headers }) => {
         t.is(headers.Authorization, `Bearer ${token}`);
         return {
-            json: sandbox.stub().returns(Promise.resolve({}))
+            json: sandbox.stub().resolves(({}))
         };
     });
 
@@ -86,14 +86,13 @@ test.serial('Uses provided extension ID', async t => {
     t.plan(1);
 
     const { client, sandbox } = t.context;
-    const extensionId = client.extensionId;
+    const { extensionId } = client;
 
-    sandbox.stub(got, 'put', (uri) => {
-        const hasId = new RegExp(`\/items\/${extensionId}`).test(uri);
-        t.true(hasId);
+    sandbox.stub(got, 'put').callsFake(uri => {
+        t.true(uri.includes(`/items/${extensionId}`));
 
         return {
-            json: sandbox.stub().returns(Promise.resolve({}))
+            json: sandbox.stub().resolves(({}))
         };
     });
 
