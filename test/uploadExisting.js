@@ -5,7 +5,7 @@ const getClient = require('./helpers/get-client');
 
 function stubTokenRequest(t, token = 'token') {
     t.context.sandbox.stub(got, 'post').returns({
-        json: t.context.sandbox.stub().returns(Promise.resolve({
+        json: t.context.sandbox.stub().resolves(({
             access_token: token
         }))
     });
@@ -41,7 +41,7 @@ test.serial('Upload only returns response body on success', async t => {
     const body = {foo: 'bar'};
 
     sandbox.stub(got, 'put').returns({
-        json: sandbox.stub().returns(Promise.resolve(body))
+        json: sandbox.stub().resolves((body))
     });
 
     stubTokenRequest(t);
@@ -58,7 +58,7 @@ test.serial('Upload does not fetch token when provided', async t => {
     });
 
     sandbox.stub(got, 'put').returns({
-        json: sandbox.stub().returns(Promise.resolve({}))
+        json: sandbox.stub().resolves(({}))
     });
 
     await client.uploadExisting({}, 'token');
@@ -75,7 +75,7 @@ test.serial('Upload uses token for auth', async t => {
     sandbox.stub(got, 'put').callsFake((uri, {headers}) => {
         t.is(headers.Authorization, `Bearer ${token}`);
         return {
-            json: sandbox.stub().returns(Promise.resolve({}))
+            json: sandbox.stub().resolves(({}))
         };
     });
 
@@ -92,7 +92,7 @@ test.serial('Uses provided extension ID', async t => {
         t.true(uri.includes(`/items/${extensionId}`));
 
         return {
-            json: sandbox.stub().returns(Promise.resolve({}))
+            json: sandbox.stub().resolves(({}))
         };
     });
 
