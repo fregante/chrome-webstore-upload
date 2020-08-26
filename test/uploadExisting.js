@@ -26,7 +26,7 @@ test.afterEach('Reset Sinon Sandbox', t => {
 // to run tests serially - https://github.com/avajs/ava/issues/295#issuecomment-161123805
 
 test.serial('Upload fails when file stream not provided', async t => {
-    const {client} = t.context;
+    const { client } = t.context;
 
     try {
         await client.uploadExisting();
@@ -37,8 +37,8 @@ test.serial('Upload fails when file stream not provided', async t => {
 });
 
 test.serial('Upload only returns response body on success', async t => {
-    const {client, sandbox} = t.context;
-    const body = {foo: 'bar'};
+    const { client, sandbox } = t.context;
+    const body = { foo: 'bar' };
 
     sandbox.stub(got, 'put').returns({
         json: sandbox.stub().resolves((body))
@@ -51,7 +51,7 @@ test.serial('Upload only returns response body on success', async t => {
 });
 
 test.serial('Upload does not fetch token when provided', async t => {
-    const {client, sandbox} = t.context;
+    const { client, sandbox } = t.context;
 
     sandbox.stub(got, 'post').callsFake(() => {
         t.fail('Token should not have been fetched');
@@ -68,11 +68,11 @@ test.serial('Upload does not fetch token when provided', async t => {
 test.serial('Upload uses token for auth', async t => {
     t.plan(1);
 
-    const {client, sandbox} = t.context;
+    const { client, sandbox } = t.context;
     const token = 'token';
 
     stubTokenRequest(t, token);
-    sandbox.stub(got, 'put').callsFake((uri, {headers}) => {
+    sandbox.stub(got, 'put').callsFake((uri, { headers }) => {
         t.is(headers.Authorization, `Bearer ${token}`);
         return {
             json: sandbox.stub().resolves(({}))
@@ -85,8 +85,8 @@ test.serial('Upload uses token for auth', async t => {
 test.serial('Uses provided extension ID', async t => {
     t.plan(1);
 
-    const {client, sandbox} = t.context;
-    const {extensionId} = client;
+    const { client, sandbox } = t.context;
+    const { extensionId } = client;
 
     sandbox.stub(got, 'put').callsFake(uri => {
         t.true(uri.includes(`/items/${extensionId}`));

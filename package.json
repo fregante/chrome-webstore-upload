@@ -32,8 +32,12 @@
     "space": 4,
     "rules": {
       "camelcase": "off",
-      "unicorn/filename-case": "off",
-      "func-names": "off"
+      "func-names": "off",
+      "object-curly-spacing": [
+        "error",
+        "always"
+      ],
+      "unicorn/filename-case": "off"
     }
   }
 }

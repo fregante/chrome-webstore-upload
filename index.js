@@ -30,7 +30,7 @@ class APIClient {
             throw new Error('Read stream missing');
         }
 
-        const {extensionId} = this;
+        const { extensionId } = this;
 
         return got.put(uploadExistingURI(extensionId), {
             headers: this._headers(await token),
@@ -39,7 +39,7 @@ class APIClient {
     }
 
     async publish(target = 'default', token = this.fetchToken()) {
-        const {extensionId} = this;
+        const { extensionId } = this;
 
         return got.post(publishURI(extensionId, target), {
             headers: this._headers(await token)
@@ -47,7 +47,7 @@ class APIClient {
     }
 
     async fetchToken() {
-        const {clientId, clientSecret, refreshToken} = this;
+        const { clientId, clientSecret, refreshToken } = this;
 
         const response = await got.post(refreshTokenURI, {
             json: {
