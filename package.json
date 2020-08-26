@@ -21,12 +21,12 @@
   ],
   "author": "Andrew Levine",
   "dependencies": {
-    "got": "^11.5.2",
-    "xo": "^0.33.0"
+    "got": "^11.5.2"
   },
   "devDependencies": {
     "ava": "^3.12.1",
-    "sinon": "^9.0.3"
+    "sinon": "^9.0.3",
+    "xo": "^0.33.0"
   },
   "xo": {
     "space": 4,
