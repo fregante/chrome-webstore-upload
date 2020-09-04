@@ -21,7 +21,7 @@
   ],
   "author": "Andrew Levine",
   "dependencies": {
-    "got": "^11.5.2"
+    "got": "11.5.2"
   },
   "devDependencies": {
     "ava": "^3.12.1",
