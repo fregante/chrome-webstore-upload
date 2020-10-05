@@ -57,8 +57,13 @@ response = await fetch('https://accounts.google.com/o/oauth2/token', {
 json = await response.json();
 console.log(json);
 if (!json.error) {
-  copy(json.refresh_token);
-  alert('The refresh_token has been copied into your clipboard. You’re done!');
+  if (copy) {
+    copy(json.refresh_token);
+    alert('The refresh_token has been copied into your clipboard. You’re done!');
+  } else {
+    console.log('Copy your token:', json.refresh_token);
+    alert('Copy your refresh_token from the console output.')
+  }
 }
 ```
 
