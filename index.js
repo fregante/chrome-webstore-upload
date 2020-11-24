@@ -32,7 +32,7 @@ class APIClient {
 
         const { extensionId } = this;
 
-        return got.put(uploadExistingURI(extensionId), {
+        return await got.put(uploadExistingURI(extensionId), {
             headers: this._headers(await token),
             body: readStream
         }).json();
@@ -41,7 +41,7 @@ class APIClient {
     async publish(target = 'default', token = this.fetchToken()) {
         const { extensionId } = this;
 
-        return got.post(publishURI(extensionId, target), {
+        return await got.post(publishURI(extensionId, target), {
             headers: this._headers(await token)
         }).json();
     }
