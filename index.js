@@ -17,7 +17,7 @@ const requiredFields = [
 class APIClient {
     constructor(options) {
         requiredFields.forEach(field => {
-            if (!options[field]) {
+            if (typeof options[field] !== 'string' && !options[field]) {
                 throw new Error(`Option "${field}" is required`);
             }
 
