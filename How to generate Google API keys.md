@@ -2,7 +2,7 @@
 
 [chrome-webstore-upload](https://github.com/DrewML/chrome-webstore-upload) uses the Chrome Web Store API. 
 
-Here's how to get its 3 access keys: `clientId`, `clientSecret`, `refreshToken`
+Here's how to get its 2 access keys: `clientId`, `refreshToken`
 
 *Note:* the names you enter here don't really matter. This will take approximately 10 minutes, sorry.
 
@@ -25,14 +25,14 @@ Here's how to get its 3 access keys: `clientId`, `clientSecret`, `refreshToken`
 
 	<img width="771" alt="Create credentials" src="https://user-images.githubusercontent.com/1402241/77865679-e89f3a00-722f-11ea-942d-5245091f22b8.png">
 
-0. Select **Other** (or **Desktop app** if available), enter `chrome-webstore-upload` and click **Create** 
+0. Select **Chrome App** (or **Desktop app** if available), enter `chrome-webstore-upload` and click **Create** 
 
-	> <img width="187" alt="Configure client type" src="https://cloud.githubusercontent.com/assets/1402241/21517952/d1f36fce-cc97-11e6-92c0-de4485d97736.png">
+	> <img width="187" alt="Configure client type" src="https://user-images.githubusercontent.com/25856620/103254672-d1f16380-49b8-11eb-8cdf-98c2483be403.png">
 
-0. Save your ✅ `clientId` and ✅ `clientSecret`, these are your 2 of your 3 keys.
+0. Save your ✅ `clientId`, this is your 1 of your 2 keys.
 0. Place your `clientId` in this URL and open it:
 
-	`https://accounts.google.com/o/oauth2/auth?client_id=YOUR_CLIENT_ID&response_type=code&scope=https://www.googleapis.com/auth/chromewebstore&redirect_uri=urn:ietf:wg:oauth:2.0:oob`
+	`https://accounts.google.com/o/oauth2/auth?client_id=YOUR_CLIENT_ID&response_type=code&scope=https://www.googleapis.com/auth/chromewebstore&redirect_uri=urn:ietf:wg:oauth:2.0:oob&access_type=offline&approval_prompt=force`
 
 0. Follow its steps and warnings (this is your own peronal app) and wait on the last page:
 
@@ -45,7 +45,6 @@ response = await fetch('https://accounts.google.com/o/oauth2/token', {
   method: "POST",
   body: new URLSearchParams([
     ['client_id', prompt('Enter your clientId')],
-    ['client_secret', prompt('Enter your clientSecret')],
     ['code', new URLSearchParams(location.search).get('approvalCode')],
     ['grant_type', 'authorization_code'],
     ['redirect_uri', 'urn:ietf:wg:oauth:2.0:oob']
@@ -67,4 +66,4 @@ if (!json.error) {
 }
 ```
 
-9001. Done. Now you should have ✅ `clientId`, ✅ `clientSecret` and ✅ `refreshToken`. You can use these for all your extensions, but don't share them!
+9001. Done. Now you should have ✅ `clientId` and ✅ `refreshToken`. You can use these for all your extensions, but don't share them!
