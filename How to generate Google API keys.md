@@ -62,7 +62,7 @@ if (!json.error) {
     alert('The refresh_token has been copied into your clipboard. You’re done!');
   } else {
     console.log('Copy your token:', json.refresh_token);
-    alert('Copy your refresh_token from the console output.')
+    alert('Copy your refresh_token from the console output. You’re done!');
   }
 }
 ```
