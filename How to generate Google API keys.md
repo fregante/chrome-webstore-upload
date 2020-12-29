@@ -29,7 +29,7 @@ Here's how to get its 2 access keys: `clientId`, `refreshToken`
 
 	> <img width="187" alt="Configure client type" src="https://user-images.githubusercontent.com/25856620/103254672-d1f16380-49b8-11eb-8cdf-98c2483be403.png">
 
-0. Save your ✅ `clientId`, this is your 1 of your 2 keys.
+0. Save your ✅ `clientId`, this is 1 of your 2 keys.
 0. Place your `clientId` in this URL and open it:
 
 	`https://accounts.google.com/o/oauth2/auth?client_id=YOUR_CLIENT_ID&response_type=code&scope=https://www.googleapis.com/auth/chromewebstore&redirect_uri=urn:ietf:wg:oauth:2.0:oob&access_type=offline&approval_prompt=force`
