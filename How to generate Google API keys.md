@@ -25,7 +25,7 @@ Here's how to get its 2 access keys: `clientId`, `refreshToken`
 
 	<img width="771" alt="Create credentials" src="https://user-images.githubusercontent.com/1402241/77865679-e89f3a00-722f-11ea-942d-5245091f22b8.png">
 
-0. Select **Chrome App** (or **Desktop app** if available), enter `chrome-webstore-upload` and click **Create** 
+0. Select **Chrome App** (**Desktop app** and **Other** also work, if Chrome App is missing), enter `chrome-webstore-upload` and click **Create** 
 
 	> <img width="187" alt="Configure client type" src="https://user-images.githubusercontent.com/25856620/103254672-d1f16380-49b8-11eb-8cdf-98c2483be403.png">
 
