@@ -4,6 +4,8 @@
 
 Here's how to get its 2 access keys: `clientId`, `refreshToken`
 
+Version below v2 used `clientSecret`, but this is no longer used, as long as you create a "Chrome App" OAuth.
+
 *Note:* the names you enter here don't really matter. This will take approximately 10 minutes, sorry.
 
 1. Visit https://console.developers.google.com/apis/credentials
@@ -23,13 +25,13 @@ Here's how to get its 2 access keys: `clientId`, `refreshToken`
 0. Visit https://console.developers.google.com/apis/credentials
 0. Click **Create credentials** > **OAuth client ID**:
 
-	<img width="771" alt="Create credentials" src="https://user-images.githubusercontent.com/1402241/77865679-e89f3a00-722f-11ea-942d-5245091f22b8.png">
+	> <img width="771" alt="Create credentials" src="https://user-images.githubusercontent.com/1402241/77865679-e89f3a00-722f-11ea-942d-5245091f22b8.png">
 
-0. Select **Chrome App** (**Desktop app** and **Other** also work, if Chrome App is missing), enter `chrome-webstore-upload` and click **Create** 
+0. Select **Chrome App**, enter `Chrome Webstore Upload`, your extension’s ID, and click **Create** 
 
-	> <img width="187" alt="Configure client type" src="https://user-images.githubusercontent.com/25856620/103254672-d1f16380-49b8-11eb-8cdf-98c2483be403.png">
+	> <img width="547" alt="Create OAuth client ID" src="https://user-images.githubusercontent.com/1402241/106205904-de6a0700-6184-11eb-8591-984e69c5e82a.png">
 
-0. Save your ✅ `clientId`, this is 1 of your 2 keys.
+0. Save your ✅ `clientId` and ignore the `clientSecret`; `clientId` is 1 of 2 keys you will need.
 0. Place your `clientId` in this URL and open it:
 
 	`https://accounts.google.com/o/oauth2/auth?client_id=YOUR_CLIENT_ID&response_type=code&scope=https://www.googleapis.com/auth/chromewebstore&redirect_uri=urn:ietf:wg:oauth:2.0:oob&access_type=offline&approval_prompt=force`
