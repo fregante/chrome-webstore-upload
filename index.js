@@ -10,7 +10,6 @@ const publishURI = (id, target) => (
 const requiredFields = [
     'extensionId',
     'clientId',
-    'clientSecret',
     'refreshToken'
 ];
 
