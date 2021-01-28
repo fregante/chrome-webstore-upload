@@ -34,7 +34,8 @@ Here's how to get its 2 access keys: `clientId`, `refreshToken`
 
 	`https://accounts.google.com/o/oauth2/auth?client_id=YOUR_CLIENT_ID&response_type=code&scope=https://www.googleapis.com/auth/chromewebstore&redirect_uri=urn:ietf:wg:oauth:2.0:oob&access_type=offline&approval_prompt=force`
 
-0. Follow its steps and warnings (this is your own personal app) and wait on the last page:
+0. Follow its steps and warnings (this is your own personal app)
+0. Wait on this page:
 
 	<img width="521" alt="Last page of OAuth" src="https://user-images.githubusercontent.com/1402241/77866731-79781480-7234-11ea-8f81-c533846d89ea.png">
 
