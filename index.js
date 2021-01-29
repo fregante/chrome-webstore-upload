@@ -22,6 +22,10 @@ class APIClient {
 
             this[field] = options[field];
         });
+
+        if ('clientSecret' in options) {
+            this.clientSecret = options.clientSecret;
+        }
     }
 
     async uploadExisting(readStream, token = this.fetchToken()) {
