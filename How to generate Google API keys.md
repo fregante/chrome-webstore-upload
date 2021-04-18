@@ -34,6 +34,12 @@ Here's how to get its 3 access keys: `clientId`, `clientSecret`, `refreshToken`
 	> <img width="536" alt="Configure client type" src="https://user-images.githubusercontent.com/1402241/106213276-f1cf9f00-6191-11eb-99a9-a5c4bcaaa350.png">
 
 0. Save your ✅ `clientId` and ✅ `clientSecret`, these are 2 of the required 3 keys
+0. Visit https://console.cloud.google.com/apis/credentials/consent
+0. Click **PUBLISH APP** and confirm
+
+	<img width="771" alt="Publish app" src="https://user-images.githubusercontent.com/27696701/114265946-2da2a280-9a26-11eb-9567-c4e00f572500.png">
+
+
 0. Place your `clientId` in this URL and open it:
 
 	`https://accounts.google.com/o/oauth2/auth?client_id=YOUR_CLIENT_ID&response_type=code&scope=https://www.googleapis.com/auth/chromewebstore&redirect_uri=urn:ietf:wg:oauth:2.0:oob`
