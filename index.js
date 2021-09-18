@@ -10,18 +10,18 @@ const publishURI = (id, target) => (
 const requiredFields = [
     'extensionId',
     'clientId',
-    'refreshToken'
+    'refreshToken',
 ];
 
 class APIClient {
     constructor(options) {
-        requiredFields.forEach(field => {
+        for (const field of requiredFields) {
             if (!options[field]) {
                 throw new Error(`Option "${field}" is required`);
             }
 
             this[field] = options[field];
-        });
+        }
 
         if ('clientSecret' in options) {
             this.clientSecret = options.clientSecret;
@@ -37,7 +37,7 @@ class APIClient {
 
         return got.put(uploadExistingURI(extensionId), {
             headers: this._headers(await token),
-            body: readStream
+            body: readStream,
         }).json();
     }
 
@@ -45,7 +45,7 @@ class APIClient {
         const { extensionId } = this;
 
         return got.post(publishURI(extensionId, target), {
-            headers: this._headers(await token)
+            headers: this._headers(await token),
         }).json();
     }
 
@@ -54,14 +54,14 @@ class APIClient {
         const json = {
             client_id: clientId,
             refresh_token: refreshToken,
-            grant_type: 'refresh_token'
+            grant_type: 'refresh_token',
         };
 
         if (clientSecret) {
             json.client_secret = clientSecret;
         }
 
-        const response = await got.post(refreshTokenURI, {json}).json();
+        const response = await got.post(refreshTokenURI, { json }).json();
 
         return response.access_token;
     }
@@ -69,7 +69,7 @@ class APIClient {
     _headers(token) {
         return {
             Authorization: `Bearer ${token}`,
-            'x-goog-api-version': '2'
+            'x-goog-api-version': '2',
         };
     }
 }

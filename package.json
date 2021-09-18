@@ -4,29 +4,34 @@
   "license": "MIT",
   "description": "Programatically upload + publish changes to the Chrome Webstore",
   "repository": "fregante/chrome-webstore-upload",
+  "funding": "https://github.com/sponsors/fregante",
   "engines": {
-    "node": ">=10.19.0"
+    "node": ">=12.20"
   },
   "scripts": {
-    "test": "ava"
+    "test": "xo && ava"
   },
   "keywords": [
     "chrome",
     "publish",
     "webstore",
+    "store",
     "extension",
     "deploy",
     "update",
     "upload"
   ],
-  "author": "Andrew Levine",
+  "contributors": [
+    "Andrew Levine",
+    "Federico Brigante <me@fregante.com> (https://fregante.com)"
+  ],
   "dependencies": {
-    "got": "11.5.2"
+    "got": "^11.8.2"
   },
   "devDependencies": {
-    "ava": "^3.12.1",
-    "sinon": "^9.0.3",
-    "xo": "^0.33.0"
+    "ava": "^3.15.0",
+    "sinon": "^11.1.2",
+    "xo": "^0.44.0"
   },
   "xo": {
     "space": 4,
@@ -37,7 +42,8 @@
         "error",
         "always"
       ],
-      "unicorn/filename-case": "off"
+      "unicorn/filename-case": "off",
+      "unicorn/prefer-module": "off"
     }
   }
 }

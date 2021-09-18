@@ -1,20 +1,20 @@
 const test = require('ava');
 const got = require('got');
 const sinon = require('sinon');
-const getClient = require('./helpers/get-client');
+const getClient = require('./helpers/get-client.js');
 
 function stubTokenRequest(t, token = 'token') {
     t.context.sandbox.stub(got, 'post').returns({
         json: t.context.sandbox.stub().resolves(({
-            access_token: token
-        }))
+            access_token: token,
+        })),
     });
 }
 
 test.beforeEach('Setup Sinon Sandbox', t => {
     t.context = {
         sandbox: sinon.createSandbox(),
-        client: getClient()
+        client: getClient(),
     };
 });
 
@@ -41,7 +41,7 @@ test.serial('Upload only returns response body on success', async t => {
     const body = { foo: 'bar' };
 
     sandbox.stub(got, 'put').returns({
-        json: sandbox.stub().resolves((body))
+        json: sandbox.stub().resolves((body)),
     });
 
     stubTokenRequest(t);
@@ -58,7 +58,7 @@ test.serial('Upload does not fetch token when provided', async t => {
     });
 
     sandbox.stub(got, 'put').returns({
-        json: sandbox.stub().resolves(({}))
+        json: sandbox.stub().resolves(({})),
     });
 
     await client.uploadExisting({}, 'token');
@@ -75,7 +75,7 @@ test.serial('Upload uses token for auth', async t => {
     sandbox.stub(got, 'put').callsFake((uri, { headers }) => {
         t.is(headers.Authorization, `Bearer ${token}`);
         return {
-            json: sandbox.stub().resolves(({}))
+            json: sandbox.stub().resolves(({})),
         };
     });
 
@@ -92,7 +92,7 @@ test.serial('Uses provided extension ID', async t => {
         t.true(uri.includes(`/items/${extensionId}`));
 
         return {
-            json: sandbox.stub().resolves(({}))
+            json: sandbox.stub().resolves(({})),
         };
     });
 

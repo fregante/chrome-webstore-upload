@@ -1,12 +1,12 @@
 const test = require('ava');
 const got = require('got');
 const sinon = require('sinon');
-const getClient = require('./helpers/get-client');
+const getClient = require('./helpers/get-client.js');
 
 test.beforeEach('Setup Sinon Sandbox', t => {
     t.context = {
         sandbox: sinon.createSandbox(),
-        client: getClient()
+        client: getClient(),
     };
 });
 
@@ -25,8 +25,8 @@ test.serial('Only returns token from response body', async t => {
 
     sandbox.stub(got, 'post').returns({
         json: sandbox.stub().resolves(({
-            access_token: accessToken
-        }))
+            access_token: accessToken,
+        })),
     });
 
     t.is(await client.fetchToken(), accessToken);
