@@ -1,14 +1,14 @@
 # How to generate Google API keys
 
-[chrome-webstore-upload](https://github.com/DrewML/chrome-webstore-upload) uses the Chrome Web Store API. 
+[chrome-webstore-upload](https://github.com/fregante/chrome-webstore-upload) uses the Chrome Web Store API.
 
 Here's how to get its 2 access keys: `clientId`, `refreshToken`
 
-Version below v2 used `clientSecret`, but this is no longer used, as long as you create a "Chrome App" OAuth.
+Version below v0.5.0 used `clientSecret`, but this is no longer used, as long as you create a "Chrome App" OAuth.
 
 *Note:* the names you enter here don't really matter. It's an app that only you will have access to. This will take approximately 10 minutes and Google likes to change these screens often. Sorry.
 
-1. Visit https://console.developers.google.com/apis/credentials
+0. Visit https://console.developers.google.com/apis/credentials
 0. Create a project:
 
 	<img width="772" alt="Google APIs: Create project" src="https://user-images.githubusercontent.com/1402241/77865620-9a8a3680-722f-11ea-99cb-b09e5c0c11ec.png">
@@ -34,7 +34,7 @@ Version below v2 used `clientSecret`, but this is no longer used, as long as you
 
 	> <img width="771" alt="Create credentials" src="https://user-images.githubusercontent.com/1402241/77865679-e89f3a00-722f-11ea-942d-5245091f22b8.png">
 
-0. Select **Chrome app**, enter `Chrome Webstore Upload`, your extension’s ID, and click **Create** 
+0. Select **Chrome app**, enter `Chrome Webstore Upload`, your extension’s ID, and click **Create**
 
 	> <img width="547" alt="Create OAuth client ID" src="https://user-images.githubusercontent.com/1402241/106205904-de6a0700-6184-11eb-8591-984e69c5e82a.png">
 

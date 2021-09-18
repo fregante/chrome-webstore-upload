@@ -3,7 +3,7 @@
   "version": "0.4.4",
   "license": "MIT",
   "description": "Programatically upload + publish changes to the Chrome Webstore",
-  "repository": "DrewML/chrome-webstore-upload",
+  "repository": "fregante/chrome-webstore-upload",
   "engines": {
     "node": ">=10.19.0"
   },
