@@ -13,7 +13,7 @@ npm install --save-dev chrome-webstore-upload
 
 ## Setup
 
-You will need a Google API `clientId`, a `clientSecret` and a `refreshToken`. Read [the guide](./How%20to%20generate%20Google%20API%20keys.md).
+You will need a Google API `clientId` and a `refreshToken`. Read [the guide](./How%20to%20generate%20Google%20API%20keys.md).
 
 ## Usage
 
@@ -24,7 +24,6 @@ All methods return an ES2015-compliant promise.
 const webStore = require('chrome-webstore-upload')({
     extensionId: 'ecnglinljpjkbgmdpeiglonddahpbkeb',
     clientId: 'xxxxxxxxxx',
-    clientSecret: 'xxxxxxxxxx',
     refreshToken: 'xxxxxxxxxx' 
 });
 ```

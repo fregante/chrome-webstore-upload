@@ -51,15 +51,17 @@ class APIClient {
 
     async fetchToken() {
         const { clientId, clientSecret, refreshToken } = this;
+        const json = {
+            client_id: clientId,
+            refresh_token: refreshToken,
+            grant_type: 'refresh_token'
+        };
 
-        const response = await got.post(refreshTokenURI, {
-            json: {
-                client_id: clientId,
-                client_secret: clientSecret,
-                refresh_token: refreshToken,
-                grant_type: 'refresh_token'
-            }
-        }).json();
+        if (clientSecret) {
+            json.client_secret = clientSecret;
+        }
+
+        const response = await got.post(refreshTokenURI, {json}).json();
 
         return response.access_token;
     }
