@@ -1,6 +1,6 @@
 {
   "name": "chrome-webstore-upload",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "license": "MIT",
   "description": "Programatically upload + publish changes to the Chrome Webstore",
   "repository": "fregante/chrome-webstore-upload",
