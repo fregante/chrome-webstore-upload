@@ -27,7 +27,7 @@ test.serial('Publish uses default target when not provided', async t => {
         t.is(new URL(uri).searchParams.get('publishTarget'), defaultTarget);
 
         return {
-            json: sandbox.stub().resolves(({})),
+            json: sandbox.stub().resolves({}),
         };
     });
 
@@ -44,7 +44,7 @@ test.serial('Publish uses target when provided', async t => {
         t.is(new URL(uri).searchParams.get('publishTarget'), target);
 
         return {
-            json: sandbox.stub().resolves(({})),
+            json: sandbox.stub().resolves({}),
         };
     });
 
@@ -60,7 +60,7 @@ test.serial('Publish does not fetch token when provided', async t => {
         }
 
         return {
-            json: sandbox.stub().resolves(({})),
+            json: sandbox.stub().resolves({}),
         };
     });
 
@@ -77,7 +77,7 @@ test.serial('Publish uses token for auth', async t => {
     sandbox.stub(got, 'post').callsFake((uri, { headers }) => {
         t.is(headers.Authorization, `Bearer ${token}`);
         return {
-            json: sandbox.stub().resolves(({})),
+            json: sandbox.stub().resolves({}),
         };
     });
 
@@ -94,7 +94,7 @@ test.serial('Uses provided extension ID', async t => {
         t.true(uri.includes(`/items/${extensionId}`));
 
         return {
-            json: sandbox.stub().resolves(({})),
+            json: sandbox.stub().resolves({}),
         };
     });
 

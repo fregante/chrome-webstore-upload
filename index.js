@@ -2,16 +2,12 @@ import got from 'got';
 
 const rootURI = 'https://www.googleapis.com';
 const refreshTokenURI = 'https://www.googleapis.com/oauth2/v4/token';
-const uploadExistingURI = id => `${rootURI}/upload/chromewebstore/v1.1/items/${id}`;
-const publishURI = (id, target) => (
-    `${rootURI}/chromewebstore/v1.1/items/${id}/publish?publishTarget=${target}`
-);
+const uploadExistingURI = id =>
+    `${rootURI}/upload/chromewebstore/v1.1/items/${id}`;
+const publishURI = (id, target) =>
+    `${rootURI}/chromewebstore/v1.1/items/${id}/publish?publishTarget=${target}`;
 
-const requiredFields = [
-    'extensionId',
-    'clientId',
-    'refreshToken',
-];
+const requiredFields = ['extensionId', 'clientId', 'refreshToken'];
 
 class APIClient {
     constructor(options) {

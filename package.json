@@ -1,21 +1,7 @@
 {
   "name": "chrome-webstore-upload",
   "version": "0.6.0",
-  "license": "MIT",
-  "description": "Programatically upload + publish changes to the Chrome Webstore",
-  "repository": "fregante/chrome-webstore-upload",
-  "funding": "https://github.com/sponsors/fregante",
-  "type": "module",
-  "exports": "./index.js",
-  "engines": {
-    "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
-  },
-  "files": [
-    "index.js"
-  ],
-  "scripts": {
-    "test": "xo && ava"
-  },
+  "description": "Upload Chrome Extensions to the Chrome Web Store",
   "keywords": [
     "chrome",
     "publish",
@@ -26,10 +12,31 @@
     "update",
     "upload"
   ],
+  "repository": "fregante/chrome-webstore-upload",
+  "funding": "https://github.com/sponsors/fregante",
+  "license": "MIT",
+  "author": "Andrew Levine",
   "contributors": [
-    "Andrew Levine",
     "Federico Brigante <me@fregante.com> (https://fregante.com)"
   ],
+  "type": "module",
+  "exports": "./index.js",
+  "files": [
+    "index.js"
+  ],
+  "scripts": {
+    "test": "xo && ava"
+  },
+  "xo": {
+    "rules": {
+      "camelcase": "off",
+      "object-curly-spacing": [
+        "error",
+        "always"
+      ]
+    },
+    "space": 4
+  },
   "dependencies": {
     "got": "^11.8.2"
   },
@@ -38,14 +45,7 @@
     "sinon": "^11.1.2",
     "xo": "^0.44.0"
   },
-  "xo": {
-    "space": 4,
-    "rules": {
-      "camelcase": "off",
-      "object-curly-spacing": [
-        "error",
-        "always"
-      ]
-    }
+  "engines": {
+    "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
   }
 }

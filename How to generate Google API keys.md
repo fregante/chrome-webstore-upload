@@ -11,7 +11,7 @@ Version below v0.5.0 used `clientSecret`, but this is no longer used, as long as
 0. Visit https://console.developers.google.com/apis/credentials
 0. Create a project:
 
-	<img width="772" alt="Google APIs: Create project" src="https://user-images.githubusercontent.com/1402241/77865620-9a8a3680-722f-11ea-99cb-b09e5c0c11ec.png">
+	> <img width="772" alt="Google APIs: Create project" src="https://user-images.githubusercontent.com/1402241/77865620-9a8a3680-722f-11ea-99cb-b09e5c0c11ec.png">
 
 0. Enter `chrome-webstore-upload` and **Create**
 0. Visit https://console.cloud.google.com/apis/credentials/consent
