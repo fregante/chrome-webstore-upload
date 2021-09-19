@@ -1,9 +1,9 @@
-const webStoreUpload = require('../../index.js');
+import webStoreUpload from '../../index.js';
 
-module.exports = function getClient() {
+export default function getClient() {
     return webStoreUpload({
         extensionId: 'foo',
         clientId: 'bar',
         refreshToken: 'heyhey',
     });
-};
+}

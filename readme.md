@@ -21,7 +21,9 @@ All methods return an ES2015-compliant promise.
 
 ### Create a new client
 ```javascript
-const webStore = require('chrome-webstore-upload')({
+import chromeWebstoreUpload from 'chrome-webstore-upload';
+
+chromeWebstoreUpload({
     extensionId: 'ecnglinljpjkbgmdpeiglonddahpbkeb',
     clientId: 'xxxxxxxxxx',
     refreshToken: 'xxxxxxxxxx'
@@ -30,11 +32,11 @@ const webStore = require('chrome-webstore-upload')({
 
 ### Upload to existing extension
 ```javascript
-const fs = require('fs');
+import fs from 'fs';
 
 const myZipFile = fs.createReadStream('./mypackage.zip');
 const token = 'xxxx'; // optional. One will be fetched if not provided
-webStore.uploadExisting(myZipFile, token).then(res => {
+chromeWebstoreUpload.uploadExisting(myZipFile, token).then(res => {
     // Response is a Resource Representation
     // https://developer.chrome.com/webstore/webstore_api/items#resource
 });
@@ -44,7 +46,7 @@ webStore.uploadExisting(myZipFile, token).then(res => {
 ```javascript
 const target = 'default'; // optional. Can also be 'trustedTesters'
 const token = 'xxxx'; // optional. One will be fetched if not provided
-webStore.publish(target, token).then(res => {
+chromeWebstoreUpload.publish(target, token).then(res => {
    // Response is documented here:
    // https://developer.chrome.com/webstore/webstore_api/items/publish
 });
@@ -52,7 +54,7 @@ webStore.publish(target, token).then(res => {
 
 ### Fetch token
 ```javascript
-webStore.fetchToken().then(token => {
+chromeWebstoreUpload.fetchToken().then(token => {
    // Token is a string
 });
 ```

@@ -1,7 +1,7 @@
-const test = require('ava');
-const got = require('got');
-const sinon = require('sinon');
-const getClient = require('./helpers/get-client.js');
+import test from 'ava';
+import got from 'got';
+import sinon from 'sinon';
+import getClient from './helpers/get-client.js';
 
 test.beforeEach('Setup Sinon Sandbox', t => {
     t.context = {
