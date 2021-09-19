@@ -1,4 +1,4 @@
-const got = require('got');
+import got from 'got';
 
 const rootURI = 'https://www.googleapis.com';
 const refreshTokenURI = 'https://www.googleapis.com/oauth2/v4/token';
@@ -74,6 +74,6 @@ class APIClient {
     }
 }
 
-module.exports = function (...args) {
+export default function chromeWebstoreUpload(...args) {
     return new APIClient(...args);
-};
+}

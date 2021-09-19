@@ -5,9 +5,14 @@
   "description": "Programatically upload + publish changes to the Chrome Webstore",
   "repository": "fregante/chrome-webstore-upload",
   "funding": "https://github.com/sponsors/fregante",
+  "type": "module",
+  "exports": "./index.js",
   "engines": {
-    "node": ">=12.20"
+    "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
   },
+  "files": [
+    "index.js"
+  ],
   "scripts": {
     "test": "xo && ava"
   },
@@ -37,13 +42,10 @@
     "space": 4,
     "rules": {
       "camelcase": "off",
-      "func-names": "off",
       "object-curly-spacing": [
         "error",
         "always"
-      ],
-      "unicorn/filename-case": "off",
-      "unicorn/prefer-module": "off"
+      ]
     }
   }
 }
