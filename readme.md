@@ -56,6 +56,17 @@ store.publish(target, token).then(res => {
 });
 ```
 
+### Get a Chrome Web Store item
+
+```javascript
+const projection = "DRAFT"; // optional. Can also be 'PUBLISHED' but only "DRAFT" is supported at this time.
+const token = "xxxx"; // optional. One will be fetched if not provided
+store.get(projection, token).then((res) => {
+  // Response is documented here:
+  // https://developer.chrome.com/docs/webstore/webstore_api/items/get
+});
+```
+
 ### Fetch token
 
 ```javascript

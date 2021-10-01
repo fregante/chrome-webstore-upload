@@ -33,27 +33,33 @@ class APIClient {
 
         const { extensionId } = this;
 
-        return got.put(uploadExistingURI(extensionId), {
-            headers: this._headers(await token),
-            body: readStream,
-        }).json();
+        return got
+            .put(uploadExistingURI(extensionId), {
+                headers: this._headers(await token),
+                body: readStream,
+            })
+            .json();
     }
 
     async publish(target = 'default', token = this.fetchToken()) {
         const { extensionId } = this;
 
-        return got.post(publishURI(extensionId, target), {
-            headers: this._headers(await token),
-        }).json();
+        return got
+            .post(publishURI(extensionId, target), {
+                headers: this._headers(await token),
+            })
+            .json();
     }
 
     async get(projection = 'DRAFT', token = this.fetchToken()) {
         const { extensionId } = this;
-    
-        return got.get(getURI(extensionId, projection), {
-            headers: this._headers(await token),
-        }).json();
-      }
+
+        return got
+            .get(getURI(extensionId, projection), {
+                headers: this._headers(await token),
+            })
+            .json();
+    }
 
     async fetchToken() {
         const { clientId, clientSecret, refreshToken } = this;
