@@ -34,23 +34,6 @@ test.serial('Get uses default projection when not provided', async t => {
     await client.get(undefined, 'token');
 });
 
-test.serial('Get uses projection when provided', async t => {
-    t.plan(1);
-
-    const { client, sandbox } = t.context;
-    const projection = 'DRAFT';
-
-    sandbox.stub(got, 'get').callsFake(uri => {
-        t.is(new URL(uri).searchParams.get('projection'), projection);
-
-        return {
-            json: sandbox.stub().resolves({}),
-        };
-    });
-
-    await client.get(projection, 'token');
-});
-
 test.serial('Get does not fetch token when provided', async t => {
     const { client, sandbox } = t.context;
 
