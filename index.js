@@ -6,6 +6,8 @@ const uploadExistingURI = id =>
     `${rootURI}/upload/chromewebstore/v1.1/items/${id}`;
 const publishURI = (id, target) =>
     `${rootURI}/chromewebstore/v1.1/items/${id}/publish?publishTarget=${target}`;
+const getURI = (id, projection) =>
+    `${rootURI}/chromewebstore/v1.1/items/${id}?projection=${projection}`;
 
 const requiredFields = ['extensionId', 'clientId', 'refreshToken'];
 
@@ -31,18 +33,32 @@ class APIClient {
 
         const { extensionId } = this;
 
-        return got.put(uploadExistingURI(extensionId), {
-            headers: this._headers(await token),
-            body: readStream,
-        }).json();
+        return got
+            .put(uploadExistingURI(extensionId), {
+                headers: this._headers(await token),
+                body: readStream,
+            })
+            .json();
     }
 
     async publish(target = 'default', token = this.fetchToken()) {
         const { extensionId } = this;
 
-        return got.post(publishURI(extensionId, target), {
-            headers: this._headers(await token),
-        }).json();
+        return got
+            .post(publishURI(extensionId, target), {
+                headers: this._headers(await token),
+            })
+            .json();
+    }
+
+    async get(projection = 'DRAFT', token = this.fetchToken()) {
+        const { extensionId } = this;
+
+        return got
+            .get(getURI(extensionId, projection), {
+                headers: this._headers(await token),
+            })
+            .json();
     }
 
     async fetchToken() {
