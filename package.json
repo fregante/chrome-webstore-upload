@@ -1,6 +1,6 @@
 {
   "name": "chrome-webstore-upload",
-  "version": "0.6.2",
+  "version": "1.0.0",
   "description": "Upload Chrome Extensions to the Chrome Web Store",
   "keywords": [
     "chrome",
