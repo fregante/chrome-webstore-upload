@@ -1,5 +1,7 @@
 # How to generate Google API keys
 
+> Disclaimer: The most recent information can be found at [chrome developers documentation](https://developer.chrome.com/docs/webstore/using_webstore_api/)
+
 [chrome-webstore-upload](https://github.com/fregante/chrome-webstore-upload) uses the Chrome Web Store API.
 
 Here's how to get its 2 access keys: `clientId`, `refreshToken`
