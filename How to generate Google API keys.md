@@ -1,16 +1,18 @@
 # How to generate Google API keys
 
-**Note:** Step 15 is broken due to [recent Google API changes](https://developers.googleblog.com/2022/02/making-oauth-flows-safer.html). If you find an alternative solution, please leave a comment in [issue #59](https://github.com/fregante/chrome-webstore-upload/issues/59). The [official documentation](https://developer.chrome.com/docs/webstore/using_webstore_api) _may_ contain more info.
-
----
-
 [chrome-webstore-upload](https://github.com/fregante/chrome-webstore-upload) uses the Chrome Web Store API.
 
+## Change notes:
+
+Version below v0.5.0 used `clientSecret`, but this is no longer used, as long as you create a "Desktop App" OAuth.
+
+[Issue #59](https://github.com/fregante/chrome-webstore-upload/issues/59): Due to [Google deprecating the oob flow](https://developers.googleblog.com/2022/02/making-oauth-flows-safer.html), the process of generating a refresh token was revised. To generate a refresh token, this tool will be used: [gcp-refresh-token](https://www.npmjs.com/package/gcp-refresh-token).
+
+_Note:_ the names you enter here don't really matter. It's an app that only you will have access to. This will take approximately 10 minutes and Google likes to change these screens often. Sorry.
+
+## Process
+
 Here's how to get its 2 access keys: `clientId`, `refreshToken`
-
-Version below v0.5.0 used `clientSecret`, but this is no longer used, as long as you create a "Chrome App" OAuth.
-
-*Note:* the names you enter here don't really matter. It's an app that only you will have access to. This will take approximately 10 minutes and Google likes to change these screens often. Sorry.
 
 0. Visit https://console.developers.google.com/apis/credentials
 0. Create a project:
@@ -38,56 +40,23 @@ Version below v0.5.0 used `clientSecret`, but this is no longer used, as long as
 
 	> <img width="771" alt="Create credentials" src="https://user-images.githubusercontent.com/1402241/77865679-e89f3a00-722f-11ea-942d-5245091f22b8.png">
 
-0. Select **Chrome app**, enter `Chrome Webstore Upload`, your extension’s ID, and click **Create**
+0. Select **Desktop app**, enter `Chrome Webstore Upload`, and click **Create**
 
-	> <img width="547" alt="Create OAuth client ID" src="https://user-images.githubusercontent.com/1402241/106205904-de6a0700-6184-11eb-8591-984e69c5e82a.png">
+	> <img width="547" alt="Create OAuth client ID" src="https://user-images.githubusercontent.com/6723574/163024843-4856a90b-4f3d-41b1-877f-0d66a0e8dbba.png">
 
-0. Save your ✅ `clientId`; This is 1 of the 2 keys you will need
+0. Download the OAuth client JSON key, save it into a `key.json` file:
 
-	> <img width="567" alt="OAuth client created" src="https://user-images.githubusercontent.com/1402241/133878131-9303a024-3f8e-4037-9816-cdf042a91d84.png">
+	> <img width="567" alt="OAuth client created" src="https://user-images.githubusercontent.com/6723574/163025132-752a8ce7-388f-4b9c-aede-47e0c99a4847.png">
 
 0. Visit https://console.cloud.google.com/apis/credentials/consent
 0. Click **PUBLISH APP** and confirm
 
 	<img width="771" alt="Publish app" src="https://user-images.githubusercontent.com/27696701/114265946-2da2a280-9a26-11eb-9567-c4e00f572500.png">
 
-0. Place your `clientId` in this URL and open it:
+0. Open a console/terminal where you stored your `key.json` file. Run the following, replacing `npx` with `pnpm dlx` or `yarn dlx` as needed:
 
-	`https://accounts.google.com/o/oauth2/auth?response_type=code&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fchromewebstore&redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob&access_type=offline&approval_prompt=force&client_id=YOUR_CLIENT_ID_HERE`
+	> npx gcp-refresh-token
 
-0. Follow its steps and warnings (this is your own personal app)
-0. Wait on this page:
+0. The command will open an OAuth consent screen on the web. Follow its steps and warnings (this is your own personal app). Make sure the local `port` is correct.
 
-	<img width="521" alt="Last page of OAuth" src="https://user-images.githubusercontent.com/1402241/77866731-79781480-7234-11ea-8f81-c533846d89ea.png">
-
-0. Run this in your browser console **on that last page**. It's a wizard to create your `refresh_token`:
-
-```js
-(async () => {
-  const response = await fetch('https://accounts.google.com/o/oauth2/token', {
-    method: "POST",
-    body: new URLSearchParams([
-      ['client_id', prompt('Enter your clientId')],
-      ['code', new URLSearchParams(location.search).get('approvalCode')],
-      ['grant_type', 'authorization_code'],
-      ['redirect_uri', 'urn:ietf:wg:oauth:2.0:oob']
-    ]),
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    }
-  });
-  const json = await response.json();
-  console.log(json);
-  if (!json.error) {
-    if (typeof copy === 'function') {
-      copy(json.refresh_token);
-      alert('The refresh_token has been copied into your clipboard. You’re done!');
-    } else {
-      console.log('Copy your token:', json.refresh_token);
-      alert('Copy your refresh_token from the console output. You’re done!');
-    }
-  }
-})();
-```
-
-9001. Done. Now you should have ✅ `clientId` and ✅ `refreshToken`. You can use these for all your extensions, but don't share them!
+9001. Done. Now you should have ✅ `clientId` and ✅ `refreshToken` in `key.json`. You can use these for all your extensions, but don't share them!
