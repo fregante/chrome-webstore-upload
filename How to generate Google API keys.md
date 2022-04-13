@@ -40,7 +40,7 @@ Version below v0.5.0 used `clientSecret`, but this is no longer used, as long as
 
 0. Save your ✅ `clientId` and ignore the other field; This is 1 of the 2 keys you will need
 
-	> <img width="567" alt="OAuth client created" src="https://user-images.githubusercontent.com/1402241/133878131-9303a024-3f8e-4037-9816-cdf042a91d84.png">
+	> <img width="579" alt="OAuth client created" src="https://user-images.githubusercontent.com/1402241/163124986-151412fd-d15b-4dbd-8900-2ccfdc8cf32e.png">
 
 0. Visit https://console.cloud.google.com/apis/credentials/consent
 0. Click **PUBLISH APP** and confirm
@@ -58,7 +58,7 @@ Version below v0.5.0 used `clientSecret`, but this is no longer used, as long as
 	http://localhost:8818/?code=4/0AX4XfWjwRDOZc_1nsxnupN8Xthe7dlfL0gB3pE-MMalTab0vWZBDj9ywDMacIT15U-Q&scope=https://www.googleapis.com/auth/chromewebstore
 	```
 
-	> <img width="478" alt="A page that says \"This site can’t be reached\"" src="https://user-images.githubusercontent.com/1402241/163123857-d2741237-80ea-482e-b468-ef9df75330f8.png">
+	> <img width="478" alt="A page that says 'This site can’t be reached'" src="https://user-images.githubusercontent.com/1402241/163123857-d2741237-80ea-482e-b468-ef9df75330f8.png">
 
 0. Copy the code between `code=` and `&scope`, it should look like this, and it's your ✅ `refreshToken`:
 	
