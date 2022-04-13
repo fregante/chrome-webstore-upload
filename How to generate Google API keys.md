@@ -36,16 +36,16 @@ Version below v0.5.0 used `clientSecret`, but this is no longer used, as long as
 
 0. Select **Desktop app**, enter `Chrome Webstore Upload` and click **Create**
 
-	> <img width="547" alt="Create OAuth client ID" src="https://user-images.githubusercontent.com/1402241/106205904-de6a0700-6184-11eb-8591-984e69c5e82a.png">
+	> <img width="568" alt="Create OAuth client ID" src="https://user-images.githubusercontent.com/1402241/163124196-c4bb4f26-9766-4766-bb81-3982875d3a84.png">
 
-0. Save your ✅ `clientId`; This is 1 of the 2 keys you will need
+0. Save your ✅ `clientId` and ignore the other field; This is 1 of the 2 keys you will need
 
 	> <img width="567" alt="OAuth client created" src="https://user-images.githubusercontent.com/1402241/133878131-9303a024-3f8e-4037-9816-cdf042a91d84.png">
 
 0. Visit https://console.cloud.google.com/apis/credentials/consent
 0. Click **PUBLISH APP** and confirm
 
-	<img width="771" alt="Publish app" src="https://user-images.githubusercontent.com/27696701/114265946-2da2a280-9a26-11eb-9567-c4e00f572500.png">
+	> <img width="771" alt="Publish app" src="https://user-images.githubusercontent.com/27696701/114265946-2da2a280-9a26-11eb-9567-c4e00f572500.png">
 
 0. Place your `clientId` in this URL and open it:
 
@@ -58,7 +58,7 @@ Version below v0.5.0 used `clientSecret`, but this is no longer used, as long as
 	http://localhost:8818/?code=4/0AX4XfWjwRDOZc_1nsxnupN8Xthe7dlfL0gB3pE-MMalTab0vWZBDj9ywDMacIT15U-Q&scope=https://www.googleapis.com/auth/chromewebstore
 	```
 
-	<img width="521" alt="Last page of OAuth" src="https://user-images.githubusercontent.com/1402241/77866731-79781480-7234-11ea-8f81-c533846d89ea.png">
+	> <img width="478" alt="A page that says \"This site can’t be reached\"" src="https://user-images.githubusercontent.com/1402241/163123857-d2741237-80ea-482e-b468-ef9df75330f8.png">
 
 0. Copy the code between `code=` and `&scope`, it should look like this, and it's your ✅ `refreshToken`:
 	
