@@ -1,9 +1,5 @@
 # How to generate Google API keys
 
-**Note:** Step 15 is broken due to [recent Google API changes](https://developers.googleblog.com/2022/02/making-oauth-flows-safer.html). If you find an alternative solution, please leave a comment in [issue #59](https://github.com/fregante/chrome-webstore-upload/issues/59). The [official documentation](https://developer.chrome.com/docs/webstore/using_webstore_api) _may_ contain more info.
-
----
-
 [chrome-webstore-upload](https://github.com/fregante/chrome-webstore-upload) uses the Chrome Web Store API.
 
 Here's how to get its 2 access keys: `clientId`, `refreshToken`
@@ -38,7 +34,7 @@ Version below v0.5.0 used `clientSecret`, but this is no longer used, as long as
 
 	> <img width="771" alt="Create credentials" src="https://user-images.githubusercontent.com/1402241/77865679-e89f3a00-722f-11ea-942d-5245091f22b8.png">
 
-0. Select **Chrome app**, enter `Chrome Webstore Upload`, your extension’s ID, and click **Create**
+0. Select **Desktop app**, enter `Chrome Webstore Upload` and click **Create**
 
 	> <img width="547" alt="Create OAuth client ID" src="https://user-images.githubusercontent.com/1402241/106205904-de6a0700-6184-11eb-8591-984e69c5e82a.png">
 
@@ -53,41 +49,21 @@ Version below v0.5.0 used `clientSecret`, but this is no longer used, as long as
 
 0. Place your `clientId` in this URL and open it:
 
-	`https://accounts.google.com/o/oauth2/auth?response_type=code&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fchromewebstore&redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob&access_type=offline&approval_prompt=force&client_id=YOUR_CLIENT_ID_HERE`
+	`https://accounts.google.com/o/oauth2/auth?response_type=code&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fchromewebstore&redirect_uri=http%3A%2F%2Flocalhost%3A8818&access_type=offline&client_id=YOUR_CLIENT_ID_HERE`
 
 0. Follow its steps and warnings (this is your own personal app)
-0. Wait on this page:
+0. You will reach this error page, with a URL that looks like:
+
+	```
+	http://localhost:8818/?code=4/0AX4XfWjwRDOZc_1nsxnupN8Xthe7dlfL0gB3pE-MMalTab0vWZBDj9ywDMacIT15U-Q&scope=https://www.googleapis.com/auth/chromewebstore
+	```
 
 	<img width="521" alt="Last page of OAuth" src="https://user-images.githubusercontent.com/1402241/77866731-79781480-7234-11ea-8f81-c533846d89ea.png">
 
-0. Run this in your browser console **on that last page**. It's a wizard to create your `refresh_token`:
-
-```js
-(async () => {
-  const response = await fetch('https://accounts.google.com/o/oauth2/token', {
-    method: "POST",
-    body: new URLSearchParams([
-      ['client_id', prompt('Enter your clientId')],
-      ['code', new URLSearchParams(location.search).get('approvalCode')],
-      ['grant_type', 'authorization_code'],
-      ['redirect_uri', 'urn:ietf:wg:oauth:2.0:oob']
-    ]),
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    }
-  });
-  const json = await response.json();
-  console.log(json);
-  if (!json.error) {
-    if (typeof copy === 'function') {
-      copy(json.refresh_token);
-      alert('The refresh_token has been copied into your clipboard. You’re done!');
-    } else {
-      console.log('Copy your token:', json.refresh_token);
-      alert('Copy your refresh_token from the console output. You’re done!');
-    }
-  }
-})();
-```
+0. Copy the code between `code=` and `&scope`, it should look like this, and it's your ✅ `refreshToken`:
+	
+	```
+	4/0AX4XfWjwRDOZc_1nsxnupN8Xthe7dlfL0gB3pE-MMalTab0vWZBDj9ywDMacIT15U-Q
+	```
 
 9001. Done. Now you should have ✅ `clientId` and ✅ `refreshToken`. You can use these for all your extensions, but don't share them!
