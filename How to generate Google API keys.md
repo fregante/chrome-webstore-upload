@@ -4,7 +4,7 @@
 
 Here's how to get its 2 access keys: `clientId`, `refreshToken`
 
-Version below v0.5.0 used `clientSecret`, but this is no longer used, as long as you create a "Chrome App" OAuth.
+Version below v0.5.0 used `clientSecret`, but this is no longer necessary.
 
 *Note:* the names you enter here don't really matter. It's an app that only you will have access to. This will take approximately 10 minutes and Google likes to change these screens often. Sorry.
 
