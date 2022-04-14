@@ -12,13 +12,11 @@ npm install --save-dev chrome-webstore-upload
 
 ## Setup
 
-You will need a Google API `clientId` and a `refreshToken`. Read [the guide](./How%20to%20generate%20Google%20API%20keys.md).
-
-Note: If you created the APIs before version 0.5.0 (September 2021), you might have to follow [the guide](./How%20to%20generate%20Google%20API%20keys.md) again. [Leave a comment](https://github.com/fregante/chrome-webstore-upload-cli/issues/44) if that happened to you.
+You will need a Google API `clientId`, `clientSecret` and `refreshToken`. Read [the guide](./How%20to%20generate%20Google%20API%20keys.md).
 
 ## Usage
 
-All methods return an ES2015-compliant promise.
+All methods return a  promise.
 
 ### Create a new client
 
@@ -28,6 +26,7 @@ import chromeWebstoreUpload from 'chrome-webstore-upload';
 const store = chromeWebstoreUpload({
   extensionId: 'ecnglinljpjkbgmdpeiglonddahpbkeb',
   clientId: 'xxxxxxxxxx',
+  clientSecret: 'xxxxxxxxxx',
   refreshToken: 'xxxxxxxxxx',
 });
 ```
