@@ -2,7 +2,7 @@
 
 [chrome-webstore-upload](https://github.com/fregante/chrome-webstore-upload) uses the Chrome Web Store API.
 
-Here's how to get its 2 access keys: `clientId`, `refreshToken`
+Here's how to get its 3 access keys: `clientId`, `clientSecret` and `refreshToken`
 
 *Note:* the names you enter here don't really matter. It's an app that only you will have access to. This will take approximately 10 minutes and Google likes to change these screens often. Sorry.
 
@@ -36,7 +36,7 @@ Here's how to get its 2 access keys: `clientId`, `refreshToken`
 
 	> <img width="568" alt="Create OAuth client ID" src="https://user-images.githubusercontent.com/1402241/163124196-c4bb4f26-9766-4766-bb81-3982875d3a84.png">
 
-0. Save your ✅ `clientId` and client secret:
+0. Save your ✅ `clientId` and ✅ `clientSecret`:
 
 	> <img width="579" alt="OAuth client created" src="https://user-images.githubusercontent.com/1402241/163124986-151412fd-d15b-4dbd-8900-2ccfdc8cf32e.png">
 
@@ -68,12 +68,13 @@ Here's how to get its 2 access keys: `clientId`, `refreshToken`
 
 ```js
 (async () => {
+  const ask = message => decodeURIComponent(prompt(message).trim())
   const response = await fetch('https://accounts.google.com/o/oauth2/token', {
     method: "POST",
     body: new URLSearchParams([
-      ['client_id', prompt('Enter your clientId')],
-      ['client_secret', prompt('Enter your client secret')],
-      ['code', prompt('Enter your approval code')],
+      ['client_id', ask('Enter your clientId')],
+      ['client_secret', ask('Enter your client secret')],
+      ['code', ask('Enter your approval code')],
       ['grant_type', 'authorization_code'],
       ['redirect_uri', 'http://localhost:8818']
     ]),
