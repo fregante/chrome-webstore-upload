@@ -4,8 +4,6 @@
 
 Here's how to get its 2 access keys: `clientId`, `refreshToken`
 
-Version below v0.5.0 used `clientSecret`, but this is no longer necessary.
-
 *Note:* the names you enter here don't really matter. It's an app that only you will have access to. This will take approximately 10 minutes and Google likes to change these screens often. Sorry.
 
 0. Visit https://console.developers.google.com/apis/credentials
@@ -63,7 +61,7 @@ Version below v0.5.0 used `clientSecret`, but this is no longer necessary.
 0. Copy the `approval code` between `code=` and `&scope`, it should look like this; use it in the next step:
 	
 	```
-	4/0AX4XfWjwRDOZc_1nsxnupN8Xthe7dlfL0gB3pE-MMalTab0vWZBDj9ywDMacIT15U-Q
+	4/0AX4XfWjwRDOZc_1nsxnupN8Xt-dont-use-this-code-IT15U-Q
 	```
 
 0. On the same page you can run this in the browser console, it's a wizard to create your `refresh_token`:
@@ -97,5 +95,5 @@ Version below v0.5.0 used `clientSecret`, but this is no longer necessary.
   }
 })();
 ```
- 
+
 9001. Done. Now you should have ✅ `clientId` and ✅ `refreshToken`. You can use these for all your extensions, but don't share them!
