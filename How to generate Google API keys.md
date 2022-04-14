@@ -38,7 +38,7 @@ Version below v0.5.0 used `clientSecret`, but this is no longer necessary.
 
 	> <img width="568" alt="Create OAuth client ID" src="https://user-images.githubusercontent.com/1402241/163124196-c4bb4f26-9766-4766-bb81-3982875d3a84.png">
 
-0. Save your ✅ `clientId` and ignore the other field; This is 1 of the 2 keys you will need
+0. Save your ✅ `clientId` and client secret:
 
 	> <img width="579" alt="OAuth client created" src="https://user-images.githubusercontent.com/1402241/163124986-151412fd-d15b-4dbd-8900-2ccfdc8cf32e.png">
 
@@ -66,7 +66,7 @@ Version below v0.5.0 used `clientSecret`, but this is no longer necessary.
 	4/0AX4XfWjwRDOZc_1nsxnupN8Xthe7dlfL0gB3pE-MMalTab0vWZBDj9ywDMacIT15U-Q
 	```
 
-0. Run this in your browser console. It's a wizard to create your `refresh_token`:
+0. On the same page you can run this in the browser console, it's a wizard to create your `refresh_token`:
 
 ```js
 (async () => {
@@ -74,6 +74,7 @@ Version below v0.5.0 used `clientSecret`, but this is no longer necessary.
     method: "POST",
     body: new URLSearchParams([
       ['client_id', prompt('Enter your clientId')],
+      ['client_secret', prompt('Enter your client secret')],
       ['code', prompt('Enter your approval code')],
       ['grant_type', 'authorization_code'],
       ['redirect_uri', 'http://localhost:8818']
@@ -89,7 +90,8 @@ Version below v0.5.0 used `clientSecret`, but this is no longer necessary.
       copy(json.refresh_token);
       alert('The refresh_token has been copied into your clipboard. You’re done!');
     } else {
-      console.log('Copy your token:', json.refresh_token);
+      console.log('Copy your token:');
+      console.log(json.refresh_token);
       alert('Copy your refresh_token from the console output. You’re done!');
     }
   }
