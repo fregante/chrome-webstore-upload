@@ -97,4 +97,4 @@ Here's how to get its 3 access keys: `clientId`, `clientSecret` and `refreshToke
 })();
 ```
 
-9001. Done. Now you should have ✅ `clientId` and ✅ `refreshToken`. You can use these for all your extensions, but don't share them!
+9001. Done. Now you should have ✅ `clientId`, ✅ `clientSecret` and ✅ `refreshToken`. You can use these for all your extensions, but don't share them!
