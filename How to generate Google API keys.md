@@ -4,6 +4,8 @@
 
 Here's how to get its 3 access keys: `clientId`, `clientSecret` and `refreshToken`
 
+**You should use Chrome, some steps are not working on Firefox.**
+
 *Note:* the names you enter here don't really matter. It's an app that only you will have access to. This will take approximately 10 minutes and Google likes to change these screens often. Sorry.
 
 0. Visit https://console.developers.google.com/apis/credentials
@@ -44,6 +46,8 @@ Here's how to get its 3 access keys: `clientId`, `clientSecret` and `refreshToke
 0. Click **PUBLISH APP** and confirm
 
 	> <img width="771" alt="Publish app" src="https://user-images.githubusercontent.com/27696701/114265946-2da2a280-9a26-11eb-9567-c4e00f572500.png">
+
+⚠ **Starting here, steps must be performed on Chrome. The last step doesn't work on Firefox for security purposes.**
 
 0. Place your `clientId` in this URL and open it:
 
