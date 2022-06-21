@@ -85,7 +85,7 @@ Here's how to get its 3 access keys: `clientId`, `clientSecret` and `refreshToke
   const json = await response.json();
   console.log(json);
   if (!json.error) {
-    if (typeof copy === 'function') {
+    if (typeof copy === 'function' && !navigator.userAgent.includes('Firefox')) { // #58
       copy(json.refresh_token);
       alert('The refresh_token has been copied into your clipboard. You’re done!');
     } else {
