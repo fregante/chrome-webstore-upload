@@ -64,7 +64,7 @@ Here's how to get its 3 access keys: `clientId`, `clientSecret` and `refreshToke
 	4/0AX4XfWjwRDOZc_1nsxnupN8Xt-dont-use-this-code-IT15U-Q
 	```
 
-0. On the same page you can run this in the browser console, it's a wizard to create your `refresh_token`:
+0. Run this in the browser console **on the same page** (otherwise you'll get CORS errors), it's a wizard to create your `refresh_token`:
 
 ```js
 (async () => {
