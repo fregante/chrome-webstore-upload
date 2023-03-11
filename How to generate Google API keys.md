@@ -6,6 +6,7 @@ Here's how to get its 3 access keys: `clientId`, `clientSecret` and `refreshToke
 
 *Note:* the names you enter here don't really matter. It's an app that only you will have access to. This will take approximately 10 minutes and Google likes to change these screens often. Sorry.
 
+0. Use Chrome or Firefox (The last step doesn't work in Safari)
 0. Visit https://console.developers.google.com/apis/credentials
 0. Create a project:
 
