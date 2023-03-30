@@ -39,7 +39,7 @@ Here's how to get its 3 access keys: `clientId`, `clientSecret` and `refreshToke
 
 0. Save your ✅ `clientId` and ✅ `clientSecret`:
 
-	> <img width="579" alt="OAuth client created" src="https://user-images.githubusercontent.com/1402241/163124986-151412fd-d15b-4dbd-8900-2ccfdc8cf32e.png">
+	> <img width="554" alt="OAuth client created" src="https://user-images.githubusercontent.com/1402241/228934028-1ef55a41-cc92-4ecf-967a-1984a363c21d.png">
 
 0. Visit https://console.cloud.google.com/apis/credentials/consent
 0. Click **PUBLISH APP** and confirm
