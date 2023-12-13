@@ -1,25 +1,19 @@
-import test from 'ava';
+import { test, beforeEach } from 'vitest';
 import fetchMock from 'fetch-mock';
 import getClient from './helpers/get-client.js';
 
-test.beforeEach(t => {
+beforeEach(context => {
     fetchMock.reset();
-    t.context = {
-        client: getClient(),
-    };
+    context.client = getClient();
 });
 
-test.serial('Publish uses default target when not provided', async t => {
-    t.plan(0);
-    const { client } = t.context;
+test('Publish uses default target when not provided', async ({ client }) => {
     fetchMock.postOnce('https://www.googleapis.com/chromewebstore/v1.1/items/foo/publish?publishTarget=default', {});
 
     await client.publish(undefined, 'token');
 });
 
-test.serial('Publish uses target when provided', async t => {
-    t.plan(0);
-    const { client } = t.context;
+test('Publish uses target when provided', async ({ client }) => {
     const target = 'trustedTesters';
 
     fetchMock.postOnce(`https://www.googleapis.com/chromewebstore/v1.1/items/foo/publish?publishTarget=${target}`, {});
@@ -27,19 +21,13 @@ test.serial('Publish uses target when provided', async t => {
     await client.publish(target, 'token');
 });
 
-test.serial('Publish does not fetch token when provided', async t => {
-    t.plan(0);
-    const { client } = t.context;
-
+test('Publish does not fetch token when provided', async ({ client }) => {
     fetchMock.postOnce('https://www.googleapis.com/chromewebstore/v1.1/items/foo/publish?publishTarget=default', {});
 
     await client.publish(undefined, 'token');
 });
 
-test.serial('Publish uses token for auth', async t => {
-    t.plan(0);
-
-    const { client } = t.context;
+test('Publish uses token for auth', async ({ client }) => {
     const token = 'token';
 
     fetchMock.postOnce({
@@ -52,10 +40,7 @@ test.serial('Publish uses token for auth', async t => {
     await client.publish(undefined, token);
 });
 
-test.serial('Uses provided extension ID', async t => {
-    t.plan(0);
-
-    const { client } = t.context;
+test('Uses provided extension ID', async ({ client }) => {
     const { extensionId } = client;
 
     // Sandbox.stub(got, 'post').callsFake(uri => {

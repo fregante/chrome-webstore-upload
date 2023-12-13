@@ -38,8 +38,8 @@
     "space": 4
   },
   "devDependencies": {
-    "ava": "^6.0.1",
     "fetch-mock": "^9.11.0",
+    "vitest": "^1.0.4",
     "xo": "^0.56.0"
   },
   "engines": {
