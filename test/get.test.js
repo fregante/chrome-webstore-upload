@@ -1,38 +1,28 @@
-import test from 'ava';
+import { test, assert, beforeEach } from 'vitest';
 import fetchMock from 'fetch-mock';
 import getClient from './helpers/get-client.js';
 
-test.beforeEach(t => {
+beforeEach(context => {
     fetchMock.reset();
-    t.context = {
-        client: getClient(),
-    };
+    context.client = getClient();
 });
 
-test('Get uses default projection when not provided', async t => {
-    const { client } = t.context;
-
+test('Get uses default projection when not provided', async ({ client }) => {
     const mock = fetchMock.getOnce('begin:https://www.googleapis.com', {});
     await client.get(undefined, 'token');
 
-    t.is(
+    assert.equal(
         mock.lastUrl(),
         'https://www.googleapis.com/chromewebstore/v1.1/items/foo?projection=DRAFT',
     );
 });
 
-test('Get does not fetch token when provided', async t => {
-    t.plan(0);
-    const { client } = t.context;
-
+test('Get does not fetch token when provided', async ({ client }) => {
     fetchMock.getOnce('begin:https://www.googleapis.com/chromewebstore/v1.1/items/', {});
     await client.get(undefined, 'token');
 });
 
-test('Get uses token for auth', async t => {
-    t.plan(0);
-
-    const { client } = t.context;
+test('Get uses token for auth', async ({ client }) => {
     const token = 'token';
 
     fetchMock.getOnce({
@@ -43,12 +33,10 @@ test('Get uses token for auth', async t => {
     await client.get(undefined, token);
 });
 
-test('Get uses provided extension ID', async t => {
-    const { client } = t.context;
+test('Get uses provided extension ID', async ({ client }) => {
     const { extensionId } = client;
 
     fetchMock.getOnce(`path:/chromewebstore/v1.1/items/${extensionId}`, {});
 
     await client.get(undefined, 'token');
-    t.pass();
 });
