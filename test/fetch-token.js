@@ -10,8 +10,6 @@ test.beforeEach(t => {
 });
 
 test('Only returns token from response body', async t => {
-    t.plan(1);
-
     const { client } = t.context;
     const accessToken = 'access-token';
 

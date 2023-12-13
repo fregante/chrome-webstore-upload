@@ -1,17 +1,15 @@
 import test from 'ava';
 import fetchMock from 'fetch-mock';
-import { refreshTokenURI } from '../index.js';
 import getClient from './helpers/get-client.js';
 
 test.beforeEach(t => {
+    fetchMock.reset();
     t.context = {
         client: getClient(),
     };
 });
 
 test('Get uses default projection when not provided', async t => {
-    t.plan(1);
-
     const { client } = t.context;
 
     const mock = fetchMock.getOnce('begin:https://www.googleapis.com', {});
@@ -24,24 +22,23 @@ test('Get uses default projection when not provided', async t => {
 });
 
 test('Get does not fetch token when provided', async t => {
+    t.plan(0);
     const { client } = t.context;
 
-    const mock = fetchMock.getOnce(/./, {});
+    fetchMock.getOnce('begin:https://www.googleapis.com/chromewebstore/v1.1/items/', {});
     await client.get(undefined, 'token');
-    t.false(mock.called('https://accounts.google.com/o/oauth2/token'), 'Token should not have been fetched');
 });
 
 test('Get uses token for auth', async t => {
-    t.plan(1);
+    t.plan(0);
 
     const { client } = t.context;
     const token = 'token';
 
-    const mock = fetchMock.get('begin:https://www.googleapis.com/', {});
-
-    t.false(mock.called({
+    fetchMock.getOnce({
+        url: 'begin:https://www.googleapis.com/',
         headers: { Authorization: `Bearer ${token}` },
-    }), 'Token should not have been fetched');
+    }, {});
 
     await client.get(undefined, token);
 });
@@ -50,7 +47,7 @@ test('Get uses provided extension ID', async t => {
     const { client } = t.context;
     const { extensionId } = client;
 
-    fetchMock.get(`end:/items/${extensionId}`, {});
+    fetchMock.getOnce(`path:/chromewebstore/v1.1/items/${extensionId}`, {});
 
     await client.get(undefined, 'token');
     t.pass();
