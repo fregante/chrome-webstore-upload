@@ -1,7 +1,5 @@
-import got from 'got';
-
 const rootURI = 'https://www.googleapis.com';
-const refreshTokenURI = 'https://www.googleapis.com/oauth2/v4/token';
+export const refreshTokenURI = 'https://www.googleapis.com/oauth2/v4/token';
 const uploadExistingURI = id =>
     `${rootURI}/upload/chromewebstore/v1.1/items/${id}`;
 const publishURI = (id, target) =>
@@ -33,32 +31,35 @@ class APIClient {
 
         const { extensionId } = this;
 
-        return got
-            .put(uploadExistingURI(extensionId), {
-                headers: this._headers(await token),
-                body: readStream,
-            })
-            .json();
+        const request = await fetch(uploadExistingURI(extensionId), {
+            method: 'PUT',
+            headers: this._headers(await token),
+            body: readStream,
+        });
+
+        return request.json();
     }
 
     async publish(target = 'default', token = this.fetchToken()) {
         const { extensionId } = this;
 
-        return got
-            .post(publishURI(extensionId, target), {
-                headers: this._headers(await token),
-            })
-            .json();
+        const request = await fetch(publishURI(extensionId, target), {
+            method: 'POST',
+            headers: this._headers(await token),
+        });
+
+        return request.json();
     }
 
     async get(projection = 'DRAFT', token = this.fetchToken()) {
         const { extensionId } = this;
 
-        return got
-            .get(getURI(extensionId, projection), {
-                headers: this._headers(await token),
-            })
-            .json();
+        const request = await fetch(getURI(extensionId, projection), {
+            method: 'GET',
+            headers: this._headers(await token),
+        });
+
+        return request.json();
     }
 
     async fetchToken() {
@@ -73,7 +74,15 @@ class APIClient {
             json.client_secret = clientSecret;
         }
 
-        const response = await got.post(refreshTokenURI, { json }).json();
+        const request = await fetch(refreshTokenURI, {
+            method: 'POST',
+            body: JSON.stringify(json),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        const response = await request.json();
 
         return response.access_token;
     }
