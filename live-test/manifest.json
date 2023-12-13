@@ -1,0 +1,9 @@
+{
+	"name": "TESTING: chrome-webstore-upload demo",
+	"version": "1.0.0",
+	"manifest_version": 3,
+	"description": "Demo extension to test the deployer",
+	"action": {
+		"default_popup": "popup.html"
+	}
+}
