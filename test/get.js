@@ -1,85 +1,57 @@
 import test from 'ava';
-import got from 'got';
-import sinon from 'sinon';
+import fetchMock from 'fetch-mock';
+import { refreshTokenURI } from '../index.js';
 import getClient from './helpers/get-client.js';
 
-test.beforeEach('Setup Sinon Sandbox', t => {
+test.beforeEach(t => {
     t.context = {
-        sandbox: sinon.createSandbox(),
         client: getClient(),
     };
 });
 
-test.afterEach('Reset Sinon Sandbox', t => {
-    t.context.sandbox.restore();
-});
-
-// TODO: Find a better way of handling stubbing, to eliminate the need
-// to run tests serially - https://github.com/avajs/ava/issues/295#issuecomment-161123805
-
-test.serial('Get uses default projection when not provided', async t => {
+test('Get uses default projection when not provided', async t => {
     t.plan(1);
 
-    const { client, sandbox } = t.context;
-    const defaultProjection = 'DRAFT';
+    const { client } = t.context;
 
-    sandbox.stub(got, 'get').callsFake(uri => {
-        t.is(new URL(uri).searchParams.get('projection'), defaultProjection);
-
-        return {
-            json: sandbox.stub().resolves({}),
-        };
-    });
-
+    const mock = fetchMock.getOnce('begin:https://www.googleapis.com', {});
     await client.get(undefined, 'token');
+
+    t.is(
+        mock.lastUrl(),
+        'https://www.googleapis.com/chromewebstore/v1.1/items/foo?projection=DRAFT',
+    );
 });
 
-test.serial('Get does not fetch token when provided', async t => {
-    const { client, sandbox } = t.context;
+test('Get does not fetch token when provided', async t => {
+    const { client } = t.context;
 
-    sandbox.stub(got, 'get').callsFake(uri => {
-        if (uri === 'https://accounts.google.com/o/oauth2/token') {
-            return t.fail('Token should not have been fetched');
-        }
-
-        return {
-            json: sandbox.stub().resolves({}),
-        };
-    });
-
+    const mock = fetchMock.getOnce(/./, {});
     await client.get(undefined, 'token');
-    t.pass('Did not fetch token');
+    t.false(mock.called('https://accounts.google.com/o/oauth2/token'), 'Token should not have been fetched');
 });
 
-test.serial('Get uses token for auth', async t => {
+test('Get uses token for auth', async t => {
     t.plan(1);
 
-    const { client, sandbox } = t.context;
+    const { client } = t.context;
     const token = 'token';
 
-    sandbox.stub(got, 'get').callsFake((uri, { headers }) => {
-        t.is(headers.Authorization, `Bearer ${token}`);
-        return {
-            json: sandbox.stub().resolves({}),
-        };
-    });
+    const mock = fetchMock.get('begin:https://www.googleapis.com/', {});
+
+    t.false(mock.called({
+        headers: { Authorization: `Bearer ${token}` },
+    }), 'Token should not have been fetched');
 
     await client.get(undefined, token);
 });
 
-test.serial('Get uses provided extension ID', async t => {
-    t.plan(1);
-
-    const { client, sandbox } = t.context;
+test('Get uses provided extension ID', async t => {
+    const { client } = t.context;
     const { extensionId } = client;
 
-    sandbox.stub(got, 'get').callsFake(uri => {
-        t.true(uri.includes(`/items/${extensionId}`));
-
-        return {
-            json: sandbox.stub().resolves({}),
-        };
-    });
+    fetchMock.get(`end:/items/${extensionId}`, {});
 
     await client.get(undefined, 'token');
+    t.pass();
 });
