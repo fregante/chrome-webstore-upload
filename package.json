@@ -39,6 +39,7 @@
   },
   "devDependencies": {
     "fetch-mock": "^9.11.0",
+    "node-fetch": "^3.3.2",
     "vitest": "^1.0.4",
     "xo": "^0.56.0"
   },
