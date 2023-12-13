@@ -40,7 +40,6 @@
   "devDependencies": {
     "ava": "^6.0.1",
     "fetch-mock": "^9.11.0",
-    "sinon": "^17.0.1",
     "xo": "^0.56.0"
   },
   "engines": {
