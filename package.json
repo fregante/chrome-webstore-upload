@@ -25,7 +25,7 @@
     "index.js"
   ],
   "scripts": {
-    "test": "xo && ava"
+    "test": "xo && vitest"
   },
   "xo": {
     "rules": {
