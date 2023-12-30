@@ -1,3 +1,7 @@
+// API documentation:
+// https://developer.chrome.com/docs/webstore/api
+// https://developer.chrome.com/docs/webstore/using-api
+
 const rootURI = 'https://www.googleapis.com';
 export const refreshTokenURI = 'https://www.googleapis.com/oauth2/v4/token';
 const uploadExistingURI = id =>
@@ -34,6 +38,7 @@ class APIClient {
         const request = await fetch(uploadExistingURI(extensionId), {
             method: 'PUT',
             headers: this._headers(await token),
+            duplex: 'half',
             body: readStream,
         });
 
