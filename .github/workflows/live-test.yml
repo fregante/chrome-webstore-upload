@@ -1,4 +1,4 @@
-name: CI
+name: Live test
 on:
   workflow_dispatch:
 jobs:
@@ -6,10 +6,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-      - run: npm install
-      - run: npm install web-ext
-      - run: npm run upload
+      - uses: oven-sh/setup-bun@v1
+      - run: bun install web-ext
+      - run: bun run upload
         env:
           CID: ${{ secrets.CLIENT_ID }}
           CS: ${{ secrets.CLIENT_SECRET }}
