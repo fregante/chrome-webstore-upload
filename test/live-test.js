@@ -6,8 +6,8 @@ const myZipFile = fs.createReadStream('./web-ext-artifacts/live-test.zip');
 
 const store = chromeWebstoreUpload({
     extensionId: 'nphhdjlnhlicpjcpanamejkfehegdclg',
-    clientId: process.env.ID,
-    clientSecret: process.env.S,
+    clientId: process.env.CID,
+    clientSecret: process.env.CS,
     refreshToken: process.env.RT,
 });
 
