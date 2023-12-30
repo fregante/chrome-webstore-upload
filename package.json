@@ -26,7 +26,7 @@
   ],
   "scripts": {
     "test": "xo && vitest run",
-    "test-upload": "node test/live-test-version.js && trash web-ext-artifacts && web-ext build --filename live-test.zip && eval $(cat .env) node test/live-test.js"
+    "test-upload": "node test/live-test-version.js && web-ext build --filename live-test.zip --overwrite-dest && eval $(cat .env) node test/live-test.js"
   },
   "xo": {
     "rules": {
@@ -48,6 +48,6 @@
     "node": ">=18"
   },
   "webExt": {
-    "sourceDir": "live-test"
+    "sourceDir": "test/extension"
   }
 }

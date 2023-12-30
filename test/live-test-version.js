@@ -1,6 +1,6 @@
 import { open } from 'node:fs/promises';
 
-const manifestFile = await open('./live-test/manifest.json', 'r+');
+const manifestFile = await open('./test/extension/manifest.json', 'r+');
 
 const manifest = JSON.parse(await manifestFile.readFile('utf8'));
 const parts = manifest.version.split('.');
