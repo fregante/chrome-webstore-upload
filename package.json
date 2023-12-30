@@ -25,7 +25,8 @@
     "index.js"
   ],
   "scripts": {
-    "test": "xo && vitest"
+    "test": "xo && vitest run",
+    "test-upload": "node test/live-test-version.js && trash web-ext-artifacts && web-ext build --filename live-test.zip && eval $(cat .env) node test/live-test.js"
   },
   "xo": {
     "rules": {
