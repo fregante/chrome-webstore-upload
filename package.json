@@ -26,7 +26,11 @@
   ],
   "scripts": {
     "test": "xo && vitest run",
-    "test-upload": "node test/live-test-version.js && web-ext build --filename live-test.zip --overwrite-dest && eval $(cat .env) node test/live-test.js"
+    "upload": "npm run bundle && npm run test:upload",
+    "prebundle": "dot-json test/extension/manifest.json version $(utc-version)",
+    "bundle": "web-ext build --filename live-test.zip --overwrite-dest",
+    "postbundle": "git restore test/extension/manifest.json",
+    "test:upload": "eval $(cat .env) node test/live-test.js"
   },
   "xo": {
     "rules": {
@@ -39,8 +43,10 @@
     "space": 4
   },
   "devDependencies": {
+    "dot-json": "^1.3.0",
     "fetch-mock": "^9.11.0",
     "node-fetch": "^2.7.0",
+    "utc-version": "^2.0.2",
     "vitest": "^1.0.4",
     "xo": "^0.56.0"
   },

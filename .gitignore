@@ -2,3 +2,4 @@ node_modules
 npm-debug.log
 web-ext-artifacts
 .env
+test/extension/manifest.json
