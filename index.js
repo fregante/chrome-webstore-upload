@@ -15,6 +15,10 @@ const requiredFields = ['extensionId', 'clientId', 'refreshToken'];
 
 class APIClient {
     constructor(options) {
+        if (typeof fetch !== 'function') {
+            throw new TypeError('`chrome-webstore-upload` requires Node.js 18.0 or newer because it relies on the global `fetch` function.');
+        }
+
         for (const field of requiredFields) {
             if (!options[field]) {
                 throw new Error(`Option "${field}" is required`);
