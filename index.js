@@ -13,6 +13,14 @@ const getURI = (id, projection) =>
 
 const requiredFields = ['extensionId', 'clientId', 'refreshToken'];
 
+function throwIfNotOk(request, response) {
+    if (!request.ok) {
+        const error = new Error(request.statusText ?? 'Unknown error');
+        error.response = response;
+        throw error;
+    }
+}
+
 class APIClient {
     constructor(options) {
         if (typeof fetch !== 'function') {
@@ -46,7 +54,11 @@ class APIClient {
             body: readStream,
         });
 
-        return request.json();
+        const response = await request.json();
+
+        throwIfNotOk(request, response);
+
+        return response;
     }
 
     async publish(target = 'default', token = this.fetchToken()) {
@@ -57,7 +69,11 @@ class APIClient {
             headers: this._headers(await token),
         });
 
-        return request.json();
+        const response = await request.json();
+
+        throwIfNotOk(request, response);
+
+        return response;
     }
 
     async get(projection = 'DRAFT', token = this.fetchToken()) {
@@ -68,7 +84,11 @@ class APIClient {
             headers: this._headers(await token),
         });
 
-        return request.json();
+        const response = await request.json();
+
+        throwIfNotOk(request, response);
+
+        return response;
     }
 
     async fetchToken() {
@@ -90,6 +110,8 @@ class APIClient {
                 'Content-Type': 'application/json',
             },
         });
+
+        await throwIfNotOk(request);
 
         const response = await request.json();
 
