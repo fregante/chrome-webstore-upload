@@ -48,7 +48,7 @@
     "overrides": [
       {
         "files": [
-          "*.ts"
+          "**/*.ts"
         ],
         "rules": {
           "@typescript-eslint/object-curly-spacing": [

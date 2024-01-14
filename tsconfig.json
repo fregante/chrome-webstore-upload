@@ -4,6 +4,6 @@
     "outDir": ".",
   },
   "files": [
-    "index.ts"
+    "source/index.ts"
   ]
 }
