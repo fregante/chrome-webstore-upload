@@ -68,7 +68,7 @@ class APIClient {
         const request = await fetch(uploadExistingURI(extensionId), {
             method: 'PUT',
             headers: this._headers(await token),
-            // @ts-expect-error Node extension? 🤷‍♂️ Required
+            // @ts-expect-error Node extension? 🤷‍♂️ Required https://github.com/nodejs/node/issues/46221
             duplex: 'half',
             body: readStream,
         });
