@@ -1,6 +1,6 @@
 import { test, assert, beforeEach } from 'vitest';
 import fetchMock from 'fetch-mock';
-import { refreshTokenURI } from '../index.js';
+import { refreshTokenURI } from '../source/index.ts';
 import getClient from './helpers/get-client.js';
 
 beforeEach(context => {
