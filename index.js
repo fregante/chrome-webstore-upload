@@ -7,8 +7,8 @@ export const refreshTokenURI = 'https://www.googleapis.com/oauth2/v4/token';
 const uploadExistingURI = id =>
     `${rootURI}/upload/chromewebstore/v1.1/items/${id}`;
 
-const publishURI = ({ id, target = 'default', deployPercentage }) => {
-    const url = new URL(`${rootURI}/chromewebstore/v1.1/items/${id}/publish`);
+const publishURI = ({ extensionId, target = 'default', deployPercentage }) => {
+    const url = new URL(`${rootURI}/chromewebstore/v1.1/items/${extensionId}/publish`);
     url.searchParams.set('publishTarget', target);
     if (deployPercentage) {
         url.searchParams.set('deployPercentage', deployPercentage);
@@ -70,10 +70,10 @@ class APIClient {
         return response;
     }
 
-    async publish({ target = 'default', deployPercentage }, token = this.fetchToken()) {
+    async publish({ target = 'default', deployPercentage, token = this.fetchToken() }) {
         const { extensionId } = this;
 
-        const request = await fetch(publishURI({ id: extensionId, target, deployPercentage }), {
+        const request = await fetch(publishURI({ extensionId, target, deployPercentage }), {
             method: 'POST',
             headers: this._headers(await token),
         });
