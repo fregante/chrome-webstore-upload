@@ -70,7 +70,7 @@ class APIClient {
         return response;
     }
 
-    async publish({ target = 'default', deployPercentage, token = this.fetchToken() }) {
+    async publish({ target = 'default', deployPercentage, token = this.fetchToken() } = {}) {
         const { extensionId } = this;
 
         const request = await fetch(publishURI({ extensionId, target, deployPercentage }), {
