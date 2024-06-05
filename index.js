@@ -8,8 +8,13 @@ const uploadExistingURI = id =>
     `${rootURI}/upload/chromewebstore/v1.1/items/${id}`;
 
 const publishURI = ({ id, target = 'default', deployPercentage }) => {
-    const deployPercentageUri = deployPercentage ? `&deployPercentage=${deployPercentage}` : '';
-    return `${rootURI}/chromewebstore/v1.1/items/${id}/publish?publishTarget=${target}${deployPercentageUri}`;
+    const url = new URL(`${rootURI}/chromewebstore/v1.1/items/${id}/publish`);
+    url.searchParams.set('publishTarget', target);
+    if (deployPercentage) {
+        url.searchParams.set('deployPercentage', deployPercentage);
+    }
+
+    return url.href;
 };
 
 const getURI = (id, projection) =>
