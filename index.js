@@ -126,6 +126,6 @@ class APIClient {
     }
 }
 
-export default function chromeWebstoreUpload(...args) {
-    return new APIClient(...args);
+export default function chromeWebstoreUpload(...arguments_) {
+    return new APIClient(...arguments_);
 }

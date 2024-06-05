@@ -1,4 +1,6 @@
-import { test, assert, expect, beforeEach } from 'vitest';
+import {
+    test, assert, expect, beforeEach,
+} from 'vitest';
 import fetchMock from 'fetch-mock';
 import getClient from './helpers/get-client.js';
 
