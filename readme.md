@@ -50,7 +50,7 @@ store.uploadExisting(myZipFile, token).then(res => {
 const target = 'default'; // optional. Can also be 'trustedTesters'
 const token = 'xxxx'; // optional. One will be fetched if not provided
 const deployPercentage = 25; // optional. Will default to 100%.
-store.publish({ target, deployPercentage, token }).then((res) => {
+store.publish(target, token, deployPercentage).then(res => {
   // Response is documented here:
   // https://developer.chrome.com/webstore/webstore_api/items/publish
 });

@@ -10,7 +10,7 @@ beforeEach(context => {
 test('Publish uses default target when not provided', async ({ client }) => {
     fetchMock.postOnce('https://www.googleapis.com/chromewebstore/v1.1/items/foo/publish?publishTarget=default', {});
 
-    await client.publish({ token: 'token' });
+    await client.publish(undefined, 'token');
 });
 
 test('Publish uses target when provided', async ({ client }) => {
@@ -18,7 +18,7 @@ test('Publish uses target when provided', async ({ client }) => {
 
     fetchMock.postOnce(`https://www.googleapis.com/chromewebstore/v1.1/items/foo/publish?publishTarget=${target}`, {});
 
-    await client.publish({ target, token: 'token' });
+    await client.publish(target, 'token');
 });
 
 test('Publish uses deployPercentage when provided', async ({ client }) => {
@@ -26,13 +26,13 @@ test('Publish uses deployPercentage when provided', async ({ client }) => {
 
     fetchMock.postOnce(`https://www.googleapis.com/chromewebstore/v1.1/items/foo/publish?publishTarget=default&deployPercentage=${deployPercentage}`, {});
 
-    await client.publish({ target: 'default', deployPercentage, token: 'token' });
+    await client.publish('default', 'token', deployPercentage);
 });
 
 test('Publish does not fetch token when provided', async ({ client }) => {
     fetchMock.postOnce('https://www.googleapis.com/chromewebstore/v1.1/items/foo/publish?publishTarget=default', {});
 
-    await client.publish({ token: 'token' });
+    await client.publish(undefined, 'token');
 });
 
 test('Publish uses token for auth', async ({ client }) => {
@@ -45,7 +45,7 @@ test('Publish uses token for auth', async ({ client }) => {
         },
     }, {});
 
-    await client.publish({ token });
+    await client.publish(undefined, token);
 });
 
 test('Uses provided extension ID', async ({ client }) => {
@@ -61,7 +61,7 @@ test('Uses provided extension ID', async ({ client }) => {
 
     fetchMock.postOnce(`https://www.googleapis.com/chromewebstore/v1.1/items/${extensionId}/publish?publishTarget=default`, {});
 
-    await client.publish({ token: 'token' });
+    await client.publish(undefined, 'token');
 });
 
 test.todo('Publish only returns response body on success');
