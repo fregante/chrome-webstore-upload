@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 // API documentation:
 // https://developer.chrome.com/docs/webstore/api
 // https://developer.chrome.com/docs/webstore/using-api
@@ -13,7 +12,7 @@ const uploadExistingURI = (id: string) =>
 const publishURI = ({ extensionId, target = 'default', deployPercentage }: {
     extensionId: string;
     target: string;
-    deployPercentage: number;
+    deployPercentage?: number;
 }): string => {
     const url = new URL(`${rootURI}/chromewebstore/v1.1/items/${extensionId}/publish`);
     url.searchParams.set('publishTarget', target);

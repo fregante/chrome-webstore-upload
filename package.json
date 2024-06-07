@@ -51,6 +51,7 @@
           "**/*.ts"
         ],
         "rules": {
+          "@typescript-eslint/naming-convention": "off",
           "@typescript-eslint/object-curly-spacing": [
             "error",
             "always"
