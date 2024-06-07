@@ -38,10 +38,9 @@ import fs from 'fs';
 
 const myZipFile = fs.createReadStream('./mypackage.zip');
 const token = 'xxxx'; // optional. One will be fetched if not provided
-store.uploadExisting(myZipFile, token).then(res => {
-  // Response is a Resource Representation
-  // https://developer.chrome.com/webstore/webstore_api/items#resource
-});
+const response = await store.uploadExisting(myZipFile, token);
+// response is a Resource Representation
+// https://developer.chrome.com/webstore/webstore_api/items#resource
 ```
 
 ### Publish extension
@@ -50,10 +49,9 @@ store.uploadExisting(myZipFile, token).then(res => {
 const target = 'default'; // optional. Can also be 'trustedTesters'
 const token = 'xxxx'; // optional. One will be fetched if not provided
 const deployPercentage = 25; // optional. Will default to 100%.
-store.publish(target, token, deployPercentage).then(res => {
-  // Response is documented here:
-  // https://developer.chrome.com/webstore/webstore_api/items/publish
-});
+const response = await store.publish(target, token, deployPercentage);
+// response is documented here:
+// https://developer.chrome.com/webstore/webstore_api/items/publish
 ```
 
 ### Get a Chrome Web Store item
@@ -61,18 +59,16 @@ store.publish(target, token, deployPercentage).then(res => {
 ```javascript
 const projection = "DRAFT"; // optional. Can also be 'PUBLISHED' but only "DRAFT" is supported at this time.
 const token = "xxxx"; // optional. One will be fetched if not provided
-store.get(projection, token).then((res) => {
-  // Response is documented here:
-  // https://developer.chrome.com/docs/webstore/webstore_api/items/get
-});
+const response = await store.get(projection, token);
+// response is documented here:
+// https://developer.chrome.com/docs/webstore/webstore_api/items/get
 ```
 
 ### Fetch token
 
 ```javascript
-store.fetchToken().then(token => {
-  // Token is a string
-});
+const token = store.fetchToken();
+// token is  astring
 ```
 
 ## Tips
