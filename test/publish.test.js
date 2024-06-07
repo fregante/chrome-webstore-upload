@@ -21,6 +21,14 @@ test('Publish uses target when provided', async ({ client }) => {
     await client.publish(target, 'token');
 });
 
+test('Publish uses deployPercentage when provided', async ({ client }) => {
+    const deployPercentage = 100;
+
+    fetchMock.postOnce(`https://www.googleapis.com/chromewebstore/v1.1/items/foo/publish?publishTarget=default&deployPercentage=${deployPercentage}`, {});
+
+    await client.publish('default', 'token', deployPercentage);
+});
+
 test('Publish does not fetch token when provided', async ({ client }) => {
     fetchMock.postOnce('https://www.googleapis.com/chromewebstore/v1.1/items/foo/publish?publishTarget=default', {});
 
