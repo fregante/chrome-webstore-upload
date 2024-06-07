@@ -3,3 +3,5 @@ npm-debug.log
 web-ext-artifacts
 .env
 test/extension/manifest.json
+index.js
+index.d.ts

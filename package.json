@@ -21,16 +21,21 @@
   ],
   "type": "module",
   "exports": "./index.js",
+  "types": "./index.d.ts",
   "files": [
-    "index.js"
+    "index.js",
+    "index.d.ts"
   ],
   "scripts": {
-    "test": "xo && vitest run",
-    "upload": "npm run bundle && npm run test:upload",
     "prebundle": "dot-json test/extension/manifest.json version $(utc-version)",
     "bundle": "web-ext build --filename live-test.zip --overwrite-dest",
     "postbundle": "git restore test/extension/manifest.json",
-    "test:upload": "eval $(cat .env) node test/live-test.js"
+    "build": "tsc",
+    "watch": "tsc -w",
+    "prepack": "npm run build",
+    "test": "xo && vitest run && tsc",
+    "test:upload": "eval $(cat .env) node test/live-test.js",
+    "upload": "npm run bundle && npm run test:upload"
   },
   "xo": {
     "rules": {
@@ -40,14 +45,31 @@
         "always"
       ]
     },
+    "overrides": [
+      {
+        "files": [
+          "**/*.ts"
+        ],
+        "rules": {
+          "@typescript-eslint/naming-convention": "off",
+          "@typescript-eslint/object-curly-spacing": [
+            "error",
+            "always"
+          ]
+        }
+      }
+    ],
     "space": 4
   },
   "devDependencies": {
+    "@sindresorhus/tsconfig": "^5.0.0",
     "dot-json": "^1.3.0",
     "fetch-mock": "^9.11.0",
     "node-fetch": "^2.7.0",
+    "type-fest": "^4.9.0",
+    "typescript": "^5.3.3",
     "utc-version": "^2.0.2",
-    "vitest": "^1.0.4",
+    "vitest": "^1.2.0",
     "xo": "^0.56.0"
   },
   "engines": {
