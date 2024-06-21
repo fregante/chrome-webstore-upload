@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import process from 'node:process';
-import chromeWebstoreUpload from '../source/index.js';
+import chromeWebstoreUpload from '../index.js';
 
 const myZipFile = fs.createReadStream('./web-ext-artifacts/live-test.zip');
 
