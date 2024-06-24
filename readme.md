@@ -51,7 +51,7 @@ const token = 'xxxx'; // optional. One will be fetched if not provided
 const deployPercentage = 25; // optional. Will default to 100%.
 const response = await store.publish(target, token, deployPercentage);
 // response is documented here:
-// https://developer.chrome.com/webstore/webstore_api/items/publish
+// https://developer.chrome.com/webstore/webstore_api/items#publish
 ```
 
 ### Get a Chrome Web Store item
@@ -61,7 +61,7 @@ const projection = "DRAFT"; // optional. Can also be 'PUBLISHED' but only "DRAFT
 const token = "xxxx"; // optional. One will be fetched if not provided
 const response = await store.get(projection, token);
 // response is documented here:
-// https://developer.chrome.com/docs/webstore/webstore_api/items/get
+// https://developer.chrome.com/docs/webstore/webstore_api/items#get
 ```
 
 ### Fetch token
