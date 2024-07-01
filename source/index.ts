@@ -44,11 +44,11 @@ function throwIfNotOk(request: Response, response: JsonObject) {
 }
 
 class APIClient {
-    private extensionId: string;
-    private clientId: string;
-    private refreshToken: string;
-    private clientSecret: string | undefined;
-    private fetch: typeof fetch;
+    extensionId: string;
+    clientId: string;
+    refreshToken: string;
+    clientSecret: string | undefined;
+    fetch: typeof fetch;
 
     constructor(options: APIClientOptions) {
         if (typeof options !== 'object') {
