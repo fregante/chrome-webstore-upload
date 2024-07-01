@@ -32,6 +32,7 @@ export type APIClientOptions = {
     clientId: string;
     refreshToken: string;
     clientSecret: string | undefined;
+    fetch?: typeof fetch;
 };
 
 function throwIfNotOk(request: Response, response: JsonObject) {
@@ -43,18 +44,19 @@ function throwIfNotOk(request: Response, response: JsonObject) {
 }
 
 class APIClient {
-    extensionId: string;
-    clientId: string;
-    refreshToken: string;
-    clientSecret: string | undefined;
+    private extensionId: string;
+    private clientId: string;
+    private refreshToken: string;
+    private clientSecret: string | undefined;
+    private fetch: typeof fetch;
 
     constructor(options: APIClientOptions) {
-        if (typeof fetch !== 'function') {
-            throw new TypeError('`chrome-webstore-upload` requires Node.js 18.17 or newer because it relies on the global `fetch` function.');
-        }
-
         if (typeof options !== 'object') {
             throw new TypeError('The options object is required');
+        }
+
+        if (typeof options.fetch !== 'function' && typeof fetch !== 'function') {
+            throw new TypeError('`chrome-webstore-upload` requires a `fetch` function. Ensure your environment includes a global `fetch` function or provide `options.fetch`.');
         }
 
         for (const field of requiredFields) {
@@ -67,6 +69,7 @@ class APIClient {
         this.clientId = options.clientId;
         this.refreshToken = options.refreshToken;
         this.clientSecret = options.clientSecret;
+        this.fetch = options.fetch ?? fetch;
     }
 
     async uploadExisting(readStream: ReadableStream, token = this.fetchToken()): Promise<JsonObject> {
@@ -76,7 +79,7 @@ class APIClient {
 
         const { extensionId } = this;
 
-        const request = await fetch(uploadExistingURI(extensionId), {
+        const request = await this.fetch(uploadExistingURI(extensionId), {
             method: 'PUT',
             headers: this._headers(await token),
             // @ts-expect-error Node extension? 🤷‍♂️ Required https://github.com/nodejs/node/issues/46221
@@ -98,7 +101,7 @@ class APIClient {
     ): Promise<JsonObject> {
         const { extensionId } = this;
 
-        const request = await fetch(publishURI({ extensionId, target, deployPercentage }), {
+        const request = await this.fetch(publishURI({ extensionId, target, deployPercentage }), {
             method: 'POST',
             headers: this._headers(await token),
         });
@@ -113,7 +116,7 @@ class APIClient {
     async get(projection = 'DRAFT', token = this.fetchToken()): Promise<JsonObject> {
         const { extensionId } = this;
 
-        const request = await fetch(getURI(extensionId, projection), {
+        const request = await this.fetch(getURI(extensionId, projection), {
             method: 'GET',
             headers: this._headers(await token),
         });
@@ -138,7 +141,7 @@ class APIClient {
             delete json.client_secret;
         }
 
-        const request = await fetch(refreshTokenURI, {
+        const request = await this.fetch(refreshTokenURI, {
             method: 'POST',
             body: JSON.stringify(json),
             headers: {
