@@ -16,7 +16,7 @@ const publishURI = ({ extensionId, target = 'default', deployPercentage }: {
 }): string => {
     const url = new URL(`${rootURI}/chromewebstore/v1.1/items/${extensionId}/publish`);
     url.searchParams.set('publishTarget', target);
-    if (deployPercentage) {
+    if (deployPercentage !== undefined) {
         url.searchParams.set('deployPercentage', String(deployPercentage));
     }
 
