@@ -69,7 +69,7 @@ class APIClient {
         this.clientSecret = options.clientSecret;
     }
 
-    async uploadExisting(readStream: ReadableStream, token = this.fetchToken()): Promise<JsonObject> {
+    async uploadExisting(readStream: ReadStream | ReadableStream, token = this.fetchToken()): Promise<JsonObject> {
         if (!readStream) {
             throw new Error('Read stream missing');
         }
