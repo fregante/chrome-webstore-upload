@@ -70,7 +70,10 @@ class APIClient {
         this.clientSecret = options.clientSecret;
     }
 
-    async uploadExisting(readStream: ReadStream | ReadableStream, token = this.fetchToken()): Promise<JsonObject> {
+    async uploadExisting(
+        readStream: ReadStream | ReadableStream,
+        token = this.fetchToken(),
+    ): Promise<JsonObject> {
         if (!readStream) {
             throw new Error('Read stream missing');
         }
@@ -82,7 +85,9 @@ class APIClient {
             headers: this._headers(await token),
             // @ts-expect-error Node extension? 🤷‍♂️ Required https://github.com/nodejs/node/issues/46221
             duplex: 'half',
-            body: readStream,
+
+            // Until they figure it out, this seems to work. Alternatively use https://stackoverflow.com/a/76780381/288906
+            body: readStream as unknown as ReadableStream,
         });
 
         const response = await request.json() as JsonObject;
