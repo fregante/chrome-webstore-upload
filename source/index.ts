@@ -2,6 +2,8 @@
 // https://developer.chrome.com/docs/webstore/api
 // https://developer.chrome.com/docs/webstore/using-api
 
+import { type Stream } from 'node:stream';
+
 import { type JsonObject } from 'type-fest';
 
 const rootURI = 'https://www.googleapis.com';
@@ -69,7 +71,7 @@ class APIClient {
         this.clientSecret = options.clientSecret;
     }
 
-    async uploadExisting(readStream: ReadStream | ReadableStream, token = this.fetchToken()): Promise<JsonObject> {
+    async uploadExisting(readStream: Stream, token = this.fetchToken()): Promise<JsonObject> {
         if (!readStream) {
             throw new Error('Read stream missing');
         }
