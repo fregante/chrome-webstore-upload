@@ -3,7 +3,6 @@
 // https://developer.chrome.com/docs/webstore/using-api
 
 import { type ReadStream } from 'node:fs';
-import { type JsonObject } from 'type-fest';
 
 const rootURI = 'https://www.googleapis.com';
 export const refreshTokenURI = 'https://www.googleapis.com/oauth2/v4/token';
@@ -35,7 +34,35 @@ export type APIClientOptions = {
     clientSecret: string | undefined;
 };
 
-function throwIfNotOk(request: Response, response: JsonObject) {
+export type ItemResource = {
+    kind: 'chromewebstore#item';
+    id: string;
+    publicKey: string;
+    uploadState: 'FAILURE' | 'IN_PROGRESS' | 'NOT_FOUND' | 'SUCCESS';
+    itemError: Array<{
+        error_code: string;
+        error_detail: string;
+    }>;
+};
+
+export type PublishResponse = {
+    kind: 'chromewebstore#item';
+    item_id: string;
+    status: Array<
+    | 'OK'
+    | 'NOT_AUTHORIZED'
+    | 'INVALID_DEVELOPER'
+    | 'DEVELOPER_NO_OWNERSHIP'
+    | 'DEVELOPER_SUSPENDED'
+    | 'ITEM_NOT_FOUND'
+    | 'ITEM_PENDING_REVIEW'
+    | 'ITEM_TAKEN_DOWN'
+    | 'PUBLISHER_SUSPENDED'
+    >;
+    statusDetail: string[];
+};
+
+function throwIfNotOk(request: Response, response: unknown) {
     if (!request.ok) {
         const error = new Error(request.statusText ?? 'Unknown error');
         (error as any).response = response;
@@ -72,8 +99,8 @@ class APIClient {
 
     async uploadExisting(
         readStream: ReadStream | ReadableStream,
-        token = this.fetchToken(),
-    ): Promise<JsonObject> {
+        token: string | Promise<string> = this.fetchToken(),
+    ): Promise<ItemResource> {
         if (!readStream) {
             throw new Error('Read stream missing');
         }
@@ -90,7 +117,7 @@ class APIClient {
             body: readStream as unknown as ReadableStream,
         });
 
-        const response = await request.json() as JsonObject;
+        const response = await request.json() as ItemResource;
 
         throwIfNotOk(request, response);
 
@@ -99,9 +126,9 @@ class APIClient {
 
     async publish(
         target = 'default',
-        token = this.fetchToken(),
+        token: string | Promise<string> = this.fetchToken(),
         deployPercentage: number | undefined = undefined,
-    ): Promise<JsonObject> {
+    ): Promise<PublishResponse> {
         const { extensionId } = this;
 
         const request = await fetch(publishURI({ extensionId, target, deployPercentage }), {
@@ -109,14 +136,14 @@ class APIClient {
             headers: this._headers(await token),
         });
 
-        const response = await request.json() as JsonObject;
+        const response = await request.json() as PublishResponse;
 
         throwIfNotOk(request, response);
 
         return response;
     }
 
-    async get(projection = 'DRAFT', token = this.fetchToken()): Promise<JsonObject> {
+    async get(projection = 'DRAFT', token: string | Promise<string> = this.fetchToken()): Promise<ItemResource> {
         const { extensionId } = this;
 
         const request = await fetch(getURI(extensionId, projection), {
@@ -124,7 +151,7 @@ class APIClient {
             headers: this._headers(await token),
         });
 
-        const response = await request.json() as JsonObject;
+        const response = await request.json() as ItemResource;
 
         throwIfNotOk(request, response);
 
@@ -152,10 +179,9 @@ class APIClient {
             },
         });
 
-        const response = await request.json() as JsonObject;
+        const response = await request.json() as { access_token: string };
         throwIfNotOk(request, response);
-
-        return response['access_token'] as string;
+        return response.access_token;
     }
 
     _headers(token: string): { Authorization: string; 'x-goog-api-version': string } {
