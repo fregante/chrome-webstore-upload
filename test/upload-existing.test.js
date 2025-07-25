@@ -1,5 +1,5 @@
 import {
-    test, assert, expect, beforeEach, vi,
+    test, assert, expect, beforeEach, vi, afterEach,
 } from 'vitest';
 import fetchMock from 'fetch-mock';
 import getClient from './helpers/get-client.js';
@@ -13,6 +13,11 @@ function stubTokenRequest(token = 'token') {
 beforeEach(context => {
     fetchMock.reset();
     context.client = getClient();
+    vi.useFakeTimers();
+});
+
+afterEach(() => {
+    vi.useRealTimers();
 });
 
 test('Upload fails when file stream not provided', async ({ client }) => {
@@ -68,11 +73,10 @@ test('Upload retries if response returns IN_PROGRESS', async ({ client }) => {
     const getSpy = vi.spyOn(client, 'get')
         .mockImplementationOnce(async () => bodyInProgress)
         .mockImplementationOnce(async () => bodySuccess);
-    const waitSpy = vi.spyOn(client, '_wait').mockImplementation(async () => {});
     const uploadPromise = client.uploadExisting({}, undefined, 2);
-
+    await vi.advanceTimersByTimeAsync(2000); // Wait for the first retry
+    await vi.advanceTimersByTimeAsync(4000); // Wait for the second retry
     const response = await uploadPromise;
     assert.deepEqual(response, bodySuccess);
-    expect(waitSpy).toHaveBeenCalledTimes(2);
     expect(getSpy).toHaveBeenCalledTimes(2);
 });

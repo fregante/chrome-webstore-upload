@@ -72,6 +72,16 @@ function throwIfNotOk(request: Response, response: unknown) {
     }
 }
 
+function isUploadInProgress(response: ItemResource): boolean {
+    return response.uploadState === 'IN_PROGRESS';
+}
+
+async function wait(ms: number): Promise<void> {
+    return new Promise(resolve => {
+        setTimeout(resolve, ms);
+    });
+}
+
 class APIClient {
     extensionId: string;
     clientId: string;
@@ -193,7 +203,7 @@ class APIClient {
     }
 
     async _waitUploadSuccess(response: ItemResource, currentAttempt: number, maxRetries: number): Promise<ItemResource> {
-        if (!this._isUploadInProgress(response)) {
+        if (!isUploadInProgress(response)) {
             // We can return the response immediately if the upload is not in progress
             return response;
         }
@@ -202,22 +212,12 @@ class APIClient {
             throw new Error('Upload is still in progress after maximum retries');
         }
 
-        // Wait for at least 5 seconds, with an exponential backoff, before checking again
+        // Wait, with an exponential backoff, before checking again
         const retryIn = retryInterval * (2 ** currentAttempt);
-        await this._wait(retryIn);
+        await wait(retryIn);
 
         // Retry fetching the item resource
         return this._waitUploadSuccess(await this.get('DRAFT'), currentAttempt + 1, maxRetries);
-    }
-
-    _isUploadInProgress(response: ItemResource): boolean {
-        return response.uploadState === 'IN_PROGRESS';
-    }
-
-    async _wait(ms: number): Promise<void> {
-        return new Promise(resolve => {
-            setTimeout(resolve, ms);
-        });
     }
 
     _headers(token: string): { Authorization: string; 'x-goog-api-version': string } {
