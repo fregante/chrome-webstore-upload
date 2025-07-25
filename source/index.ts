@@ -27,8 +27,6 @@ const getURI = (id: string, projection: string) => `${rootURI}/chromewebstore/v1
 
 const requiredFields = ['extensionId', 'clientId', 'refreshToken'] as const;
 
-const retryInterval = 2000; // 2 seconds
-
 export type APIClientOptions = {
     extensionId: string;
     clientId: string;
@@ -62,6 +60,11 @@ export type PublishResponse = {
     | 'PUBLISHER_SUSPENDED'
     >;
     statusDetail: string[];
+};
+
+export type PollProgressConfig = {
+    maxWait?: number;
+    retryInterval?: number;
 };
 
 function throwIfNotOk(request: Response, response: unknown) {
@@ -112,7 +115,7 @@ class APIClient {
     async uploadExisting(
         readStream: ReadStream | ReadableStream,
         token: string | Promise<string> = this.fetchToken(),
-        waitSuccessRetries = 0,
+        pollProgressConfig?: PollProgressConfig,
     ): Promise<ItemResource> {
         if (!readStream) {
             throw new Error('Read stream missing');
@@ -134,9 +137,9 @@ class APIClient {
 
         throwIfNotOk(request, response);
 
-        if (waitSuccessRetries > 0) {
-            // Wait for the upload to complete, retrying if necessary
-            return this._waitUploadSuccess(response, 0, waitSuccessRetries);
+        if (pollProgressConfig) {
+            // Wait for the upload to complete, retrying if necessary for the specified duration
+            return this._waitUploadSuccess(response, pollProgressConfig);
         }
 
         return response;
@@ -202,22 +205,26 @@ class APIClient {
         return response.access_token;
     }
 
-    async _waitUploadSuccess(response: ItemResource, currentAttempt: number, maxRetries: number): Promise<ItemResource> {
+    async _waitUploadSuccess(response: ItemResource, pollProgressConfig: PollProgressConfig): Promise<ItemResource> {
         if (!isUploadInProgress(response)) {
             // We can return the response immediately if the upload is not in progress
             return response;
         }
 
-        if (currentAttempt >= maxRetries) {
+        const { maxWait = 60 * 1000, retryInterval = 2000 } = pollProgressConfig;
+
+        if (maxWait < 0) {
             throw new Error('Upload is still in progress after maximum retries');
         }
 
-        // Wait, with an exponential backoff, before checking again
-        const retryIn = retryInterval * (2 ** currentAttempt);
-        await wait(retryIn);
+        // Wait before checking again
+        await wait(retryInterval);
 
         // Retry fetching the item resource
-        return this._waitUploadSuccess(await this.get('DRAFT'), currentAttempt + 1, maxRetries);
+        return this._waitUploadSuccess(await this.get('DRAFT'), {
+            ...pollProgressConfig,
+            maxWait: maxWait - retryInterval,
+        });
     }
 
     _headers(token: string): { Authorization: string; 'x-goog-api-version': string } {

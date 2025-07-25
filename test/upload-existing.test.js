@@ -73,7 +73,10 @@ test('Upload retries if response returns IN_PROGRESS', async ({ client }) => {
     const getSpy = vi.spyOn(client, 'get')
         .mockImplementationOnce(async () => bodyInProgress)
         .mockImplementationOnce(async () => bodySuccess);
-    const uploadPromise = client.uploadExisting({}, undefined, 2);
+    const uploadPromise = client.uploadExisting({}, undefined, {
+        maxWait: 6000, // 6 seconds
+        retryInterval: 2000, // 2 seconds
+    });
     await vi.advanceTimersByTimeAsync(2000); // Wait for the first retry
     await vi.advanceTimersByTimeAsync(4000); // Wait for the second retry
     const response = await uploadPromise;
