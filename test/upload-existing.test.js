@@ -66,9 +66,9 @@ test('Upload retries if response returns IN_PROGRESS', async ({ client }) => {
     stubTokenRequest();
 
     const getSpy = vi.spyOn(client, 'get')
-        .mockImplementationOnce(() => Promise.resolve(bodyInProgress))
-        .mockImplementationOnce(() => Promise.resolve(bodySuccess));
-    const waitSpy = vi.spyOn(client, '_wait').mockImplementation(() => Promise.resolve());
+        .mockImplementationOnce(async () => bodyInProgress)
+        .mockImplementationOnce(async () => bodySuccess);
+    const waitSpy = vi.spyOn(client, '_wait').mockImplementation(async () => {});
     const uploadPromise = client.uploadExisting({}, undefined, 2);
 
     const response = await uploadPromise;
