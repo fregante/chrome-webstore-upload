@@ -27,6 +27,8 @@ const getURI = (id: string, projection: string) => `${rootURI}/chromewebstore/v1
 
 const requiredFields = ['extensionId', 'clientId', 'refreshToken'] as const;
 
+const retryInterval = 2000; // 2 seconds
+
 export type APIClientOptions = {
     extensionId: string;
     clientId: string;
@@ -100,6 +102,7 @@ class APIClient {
     async uploadExisting(
         readStream: ReadStream | ReadableStream,
         token: string | Promise<string> = this.fetchToken(),
+        waitSuccessRetries = 0,
     ): Promise<ItemResource> {
         if (!readStream) {
             throw new Error('Read stream missing');
@@ -120,6 +123,11 @@ class APIClient {
         const response = await request.json() as ItemResource;
 
         throwIfNotOk(request, response);
+
+        if (waitSuccessRetries > 0) {
+            // Wait for the upload to complete, retrying if necessary
+            return this._waitUploadSuccess(response, 0, waitSuccessRetries);
+        }
 
         return response;
     }
@@ -182,6 +190,34 @@ class APIClient {
         const response = await request.json() as { access_token: string };
         throwIfNotOk(request, response);
         return response.access_token;
+    }
+
+    async _waitUploadSuccess(response: ItemResource, currentAttempt: number, maxRetries: number): Promise<ItemResource> {
+        if (!this._isUploadInProgress(response)) {
+            // We can return the response immediately if the upload is not in progress
+            return response;
+        }
+
+        if (currentAttempt >= maxRetries) {
+            throw new Error('Upload is still in progress after maximum retries');
+        }
+
+        // Wait for at least 5 seconds, with an exponential backoff, before checking again
+        const retryIn = retryInterval * (2 ** currentAttempt);
+        await this._wait(retryIn);
+
+        // Retry fetching the item resource
+        return this._waitUploadSuccess(await this.get('DRAFT'), currentAttempt + 1, maxRetries);
+    }
+
+    _isUploadInProgress(response: ItemResource): boolean {
+        return response.uploadState === 'IN_PROGRESS';
+    }
+
+    async _wait(ms: number): Promise<void> {
+        return new Promise(resolve => {
+            setTimeout(resolve, ms);
+        });
     }
 
     _headers(token: string): { Authorization: string; 'x-goog-api-version': string } {

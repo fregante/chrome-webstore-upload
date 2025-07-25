@@ -1,11 +1,11 @@
 import {
-    test, assert, expect, beforeEach,
+    test, assert, expect, beforeEach, vi,
 } from 'vitest';
 import fetchMock from 'fetch-mock';
 import getClient from './helpers/get-client.js';
 
 function stubTokenRequest(token = 'token') {
-    fetchMock.postOnce('https://www.googleapis.com/oauth2/v4/token', {
+    fetchMock.post('https://www.googleapis.com/oauth2/v4/token', {
         access_token: token,
     });
 }
@@ -54,4 +54,25 @@ test('Uses provided extension ID', async ({ client }) => {
     });
 
     await client.uploadExisting({}, 'token');
+});
+
+test('Upload retries if response returns IN_PROGRESS', async ({ client }) => {
+    const bodyInProgress = { uploadState: 'IN_PROGRESS' };
+    const bodySuccess = { uploadState: 'SUCCESS' };
+
+    fetchMock.putOnce('https://www.googleapis.com/upload/chromewebstore/v1.1/items/foo', {
+        ...bodyInProgress,
+    });
+    stubTokenRequest();
+
+    const getSpy = vi.spyOn(client, 'get')
+        .mockImplementationOnce(() => Promise.resolve(bodyInProgress))
+        .mockImplementationOnce(() => Promise.resolve(bodySuccess));
+    const waitSpy = vi.spyOn(client, '_wait').mockImplementation(() => Promise.resolve());
+    const uploadPromise = client.uploadExisting({}, undefined, 2);
+
+    const response = await uploadPromise;
+    assert.deepEqual(response, bodySuccess);
+    expect(waitSpy).toHaveBeenCalledTimes(2);
+    expect(getSpy).toHaveBeenCalledTimes(2);
 });
