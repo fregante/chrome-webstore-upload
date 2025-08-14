@@ -38,7 +38,8 @@ import fs from 'fs';
 
 const myZipFile = fs.createReadStream('./mypackage.zip');
 const token = 'xxxx'; // optional. One will be fetched if not provided
-const response = await store.uploadExisting(myZipFile, token);
+const maxAwaitInProgressResponseSeconds = 60; // optional. If provided it will wait for that amount of time and retry every 2 seconds for the upload to finish if the return status is IN_PROGRESS
+const response = await store.uploadExisting(myZipFile, token, maxAwaitInProgressResponseSeconds);
 // response is a Resource Representation
 // https://developer.chrome.com/webstore/webstore_api/items#resource
 ```
