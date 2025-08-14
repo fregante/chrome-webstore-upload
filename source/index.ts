@@ -27,6 +27,8 @@ const getURI = (id: string, projection: string) => `${rootURI}/chromewebstore/v1
 
 const requiredFields = ['extensionId', 'clientId', 'refreshToken'] as const;
 
+const retryIntervalSeconds = 2;
+
 export type APIClientOptions = {
     extensionId: string;
     clientId: string;
@@ -191,25 +193,19 @@ class APIClient {
     }
 
     async _waitUploadSuccess(response: ItemResource, maxAwaitInProgressResponseSeconds: number): Promise<ItemResource> {
-        if (response.uploadState !== 'IN_PROGRESS') {
-            // We can return the response immediately if the upload is not in progress
-            return response;
-        }
-
         const maxWait = maxAwaitInProgressResponseSeconds * 1000;
-        const retryInterval = 2000;
-
-        if (maxWait < 0) {
-            throw new Error('Upload is still in progress after maximum retries');
+        if (response.uploadState !== 'IN_PROGRESS' || maxWait < 0) {
+            // We can return the response immediately if the upload is not in progress or the maximum wait time has been exceeded
+            return response;
         }
 
         // Wait before checking again
         await new Promise(resolve => {
-            setTimeout(resolve, retryInterval);
+            setTimeout(resolve, retryIntervalSeconds * 1000);
         });
 
         // Retry fetching the item resource
-        return this._waitUploadSuccess(await this.get('DRAFT'), maxAwaitInProgressResponseSeconds);
+        return this._waitUploadSuccess(await this.get('DRAFT'), maxAwaitInProgressResponseSeconds - retryIntervalSeconds);
     }
 
     _headers(token: string): { Authorization: string; 'x-goog-api-version': string } {
