@@ -188,7 +188,7 @@ class APIClient {
     }
 
     async _waitUploadSuccess(
-        response: ItemResource, 
+        response: ItemResource,
         maxAwaitInProgressResponseSeconds: number,
     ): Promise<ItemResource> {
         if (response.uploadState !== 'IN_PROGRESS' || maxAwaitInProgressResponseSeconds < retryIntervalSeconds) {
