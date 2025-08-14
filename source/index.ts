@@ -115,7 +115,7 @@ class APIClient {
     async uploadExisting(
         readStream: ReadStream | ReadableStream,
         token: string | Promise<string> = this.fetchToken(),
-        pollProgressConfig?: PollProgressConfig,
+        maxAwaitInProgressResponseSeconds = 60,
     ): Promise<ItemResource> {
         if (!readStream) {
             throw new Error('Read stream missing');
@@ -137,9 +137,9 @@ class APIClient {
 
         throwIfNotOk(request, response);
 
-        if (pollProgressConfig) {
+        if (maxAwaitInProgressResponseSeconds) {
             // Wait for the upload to complete, retrying if necessary for the specified duration
-            return this._waitUploadSuccess(response, pollProgressConfig);
+            return this._waitUploadSuccess(response, maxAwaitInProgressResponseSeconds);
         }
 
         return response;
@@ -205,13 +205,14 @@ class APIClient {
         return response.access_token;
     }
 
-    async _waitUploadSuccess(response: ItemResource, pollProgressConfig: PollProgressConfig): Promise<ItemResource> {
+    async _waitUploadSuccess(response: ItemResource, maxAwaitInProgressResponseSeconds: number): Promise<ItemResource> {
         if (!isUploadInProgress(response)) {
             // We can return the response immediately if the upload is not in progress
             return response;
         }
 
-        const { maxWait = 60 * 1000, retryInterval = 2000 } = pollProgressConfig;
+        const maxWait = maxAwaitInProgressResponseSeconds * 1000;
+        const retryInterval = 2000;
 
         if (maxWait < 0) {
             throw new Error('Upload is still in progress after maximum retries');
@@ -221,10 +222,7 @@ class APIClient {
         await wait(retryInterval);
 
         // Retry fetching the item resource
-        return this._waitUploadSuccess(await this.get('DRAFT'), {
-            ...pollProgressConfig,
-            maxWait: maxWait - retryInterval,
-        });
+        return this._waitUploadSuccess(await this.get('DRAFT'), maxAwaitInProgressResponseSeconds);
     }
 
     _headers(token: string): { Authorization: string; 'x-goog-api-version': string } {
