@@ -62,11 +62,6 @@ export type PublishResponse = {
     statusDetail: string[];
 };
 
-export type PollProgressConfig = {
-    maxWait?: number;
-    retryInterval?: number;
-};
-
 function throwIfNotOk(request: Response, response: unknown) {
     if (!request.ok) {
         const error = new Error(request.statusText ?? 'Unknown error');
