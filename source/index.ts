@@ -102,7 +102,7 @@ class APIClient {
     async uploadExisting(
         readStream: ReadStream | ReadableStream,
         token: string | Promise<string> = this.fetchToken(),
-        maxAwaitInProgressResponseSeconds = 60,
+        maxAwaitInProgressResponseSeconds = 0,
     ): Promise<ItemResource> {
         if (!readStream) {
             throw new Error('Read stream missing');
