@@ -78,6 +78,7 @@ test('Upload retries if response returns IN_PROGRESS', async ({ client }) => {
         retryInterval: 2000, // 2 seconds
     });
     await vi.advanceTimersByTimeAsync(2000); // Wait for the first retry
+    expect(getSpy).toHaveBeenCalledTimes(1);
     await vi.advanceTimersByTimeAsync(4000); // Wait for the second retry
     const response = await uploadPromise;
     assert.deepEqual(response, bodySuccess);
