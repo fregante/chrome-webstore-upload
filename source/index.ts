@@ -75,16 +75,6 @@ function throwIfNotOk(request: Response, response: unknown) {
     }
 }
 
-function isUploadInProgress(response: ItemResource): boolean {
-    return response.uploadState === 'IN_PROGRESS';
-}
-
-async function wait(ms: number): Promise<void> {
-    return new Promise(resolve => {
-        setTimeout(resolve, ms);
-    });
-}
-
 class APIClient {
     extensionId: string;
     clientId: string;
@@ -206,7 +196,7 @@ class APIClient {
     }
 
     async _waitUploadSuccess(response: ItemResource, maxAwaitInProgressResponseSeconds: number): Promise<ItemResource> {
-        if (!isUploadInProgress(response)) {
+        if (response.uploadState !== 'IN_PROGRESS') {
             // We can return the response immediately if the upload is not in progress
             return response;
         }
@@ -219,7 +209,9 @@ class APIClient {
         }
 
         // Wait before checking again
-        await wait(retryInterval);
+        await new Promise(resolve => {
+            setTimeout(resolve, retryInterval);
+        });
 
         // Retry fetching the item resource
         return this._waitUploadSuccess(await this.get('DRAFT'), maxAwaitInProgressResponseSeconds);
