@@ -124,12 +124,7 @@ class APIClient {
 
         throwIfNotOk(request, response);
 
-        if (maxAwaitInProgressResponseSeconds) {
-            // Wait for the upload to complete, retrying if necessary for the specified duration
-            return this._waitUploadSuccess(response, maxAwaitInProgressResponseSeconds);
-        }
-
-        return response;
+        return this._waitUploadSuccess(response, maxAwaitInProgressResponseSeconds);
     }
 
     async publish(
@@ -192,10 +187,11 @@ class APIClient {
         return response.access_token;
     }
 
-    async _waitUploadSuccess(response: ItemResource, maxAwaitInProgressResponseSeconds: number): Promise<ItemResource> {
-        const maxWait = maxAwaitInProgressResponseSeconds * 1000;
-        if (response.uploadState !== 'IN_PROGRESS' || maxWait < 0) {
-            // We can return the response immediately if the upload is not in progress or the maximum wait time has been exceeded
+    async _waitUploadSuccess(
+        response: ItemResource, 
+        maxAwaitInProgressResponseSeconds: number,
+    ): Promise<ItemResource> {
+        if (response.uploadState !== 'IN_PROGRESS' || maxAwaitInProgressResponseSeconds < retryIntervalSeconds) {
             return response;
         }
 
