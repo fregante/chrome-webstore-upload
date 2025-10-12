@@ -1,0 +1,240 @@
+import {
+    test, expect, beforeEach, assert,
+} from 'vitest';
+import fetchMock from 'fetch-mock';
+import { CWSError } from '../source/index.ts';
+import getClient from './helpers/get-client.js';
+
+beforeEach(context => {
+    fetchMock.reset();
+    context.client = getClient();
+});
+
+test('Throws CWSError on invalid grant OAuth error', async ({ client }) => {
+    const errorResponse = {
+        error: 'invalid_grant',
+        error_description: 'Bad Request',
+    };
+
+    fetchMock.post('https://www.googleapis.com/oauth2/v4/token', {
+        status: 400,
+        body: errorResponse,
+    });
+
+    await expect(client.fetchToken()).rejects.toThrow(CWSError);
+    await expect(client.fetchToken()).rejects.toThrow(/Invalid grant.*authentication keys are probably invalid or expired/);
+});
+
+test('Throws CWSError with cause on invalid grant error', async ({ client }) => {
+    const errorResponse = {
+        error: 'invalid_grant',
+        error_description: 'Bad Request',
+    };
+
+    fetchMock.post('https://www.googleapis.com/oauth2/v4/token', {
+        status: 400,
+        body: errorResponse,
+    });
+
+    try {
+        await client.fetchToken();
+        assert.fail('Should have thrown an error');
+    } catch (error) {
+        expect(error).toBeInstanceOf(CWSError);
+        expect(error.cause).toEqual(errorResponse);
+    }
+});
+
+test('Throws CWSError on invalid request OAuth error', async ({ client }) => {
+    const errorResponse = {
+        error: 'invalid_request',
+        error_description: 'client_secret is missing.',
+    };
+
+    fetchMock.post('https://www.googleapis.com/oauth2/v4/token', {
+        status: 400,
+        body: errorResponse,
+    });
+
+    await expect(client.fetchToken()).rejects.toThrow(CWSError);
+    await expect(client.fetchToken()).rejects.toThrow(/Invalid request.*client_secret is missing/);
+});
+
+test('Throws CWSError on publish condition not met', async ({ client }) => {
+    const errorResponse = {
+        error: {
+            code: 400,
+            message: 'Publish condition not met: You may not edit or publish an item that is in review.',
+            errors: [
+                {
+                    message: 'Publish condition not met: You may not edit or publish an item that is in review.',
+                    domain: 'chromewebstore.access',
+                    reason: 'badRequest',
+                },
+            ],
+        },
+    };
+
+    fetchMock.postOnce('https://www.googleapis.com/chromewebstore/v1.1/items/foo/publish?publishTarget=default', {
+        status: 400,
+        body: errorResponse,
+    });
+
+    try {
+        await client.publish('default', 'token');
+        assert.fail('Should have thrown an error');
+    } catch (error) {
+        expect(error).toBeInstanceOf(CWSError);
+        expect(error.message).toMatch(/Publish condition not met.*item that is in review/);
+    }
+});
+
+test('Throws CWSError with detailed privacy policy message', async ({ client }) => {
+    const errorResponse = {
+        error: {
+            errors: [
+                {
+                    domain: 'global',
+                    reason: 'badRequest',
+                    message: 'Publish condition not met: To publish your item, you must provide mandatory privacy information in the new Developer Dashboard: https://chrome.google.com/webstore/devconsole. Click on your item from the home page and enter this information on the Privacy tab.',
+                },
+            ],
+            code: 400,
+            message: 'Publish condition not met: To publish your item, you must provide mandatory privacy information in the new Developer Dashboard: https://chrome.google.com/webstore/devconsole. Click on your item from the home page and enter this information on the Privacy tab.',
+        },
+    };
+
+    fetchMock.postOnce('https://www.googleapis.com/chromewebstore/v1.1/items/foo/publish?publishTarget=default', {
+        status: 400,
+        body: errorResponse,
+    });
+
+    try {
+        await client.publish('default', 'token');
+        assert.fail('Should have thrown an error');
+    } catch (error) {
+        expect(error).toBeInstanceOf(CWSError);
+        expect(error.message).toContain('privacy information');
+        expect(error.cause).toEqual(errorResponse);
+    }
+});
+
+test('Throws CWSError on upload failure with invalid version', async ({ client }) => {
+    const errorResponse = {
+        kind: 'chromewebstore#item',
+        id: 'nphhdjlnhlicpjcpanamejkfehegdclg',
+        uploadState: 'FAILURE',
+        itemError: [
+            {
+                error_code: 'PKG_INVALID_VERSION_NUMBER',
+                error_detail: 'Invalid version number in manifest: 23.12.30.553. Please make sure the newly uploaded package has a larger version in file manifest.json than the published package: 23.12.30.554.',
+            },
+        ],
+    };
+
+    fetchMock.putOnce('https://www.googleapis.com/upload/chromewebstore/v1.1/items/foo', {
+        status: 200,
+        body: errorResponse,
+    });
+
+    try {
+        await client.uploadExisting({}, 'token');
+        assert.fail('Should have thrown an error');
+    } catch (error) {
+        expect(error).toBeInstanceOf(CWSError);
+        expect(error.message).toContain('Invalid version number');
+    }
+});
+
+test('Throws CWSError with cause on manifest parse error', async ({ client }) => {
+    const errorResponse = {
+        kind: 'chromewebstore#item',
+        id: 'bdeobgpddfaegbjfinhldnkfeieakdaf',
+        uploadState: 'FAILURE',
+        itemError: [
+            {
+                error_code: 'PKG_MANIFEST_PARSE_ERROR',
+                error_detail: 'The manifest has an invalid version: 0.0.0. Please format the version as defined \n      <a href="https://developer.chrome.com/extensions/manifest/version" target="_blank"> here</a>.',
+            },
+        ],
+    };
+
+    fetchMock.putOnce('https://www.googleapis.com/upload/chromewebstore/v1.1/items/foo', {
+        status: 200,
+        body: errorResponse,
+    });
+
+    try {
+        await client.uploadExisting({}, 'token');
+        assert.fail('Should have thrown an error');
+    } catch (error) {
+        expect(error).toBeInstanceOf(CWSError);
+        expect(error.message).toContain('invalid version');
+        expect(error.cause).toEqual(errorResponse);
+    }
+});
+
+test('Throws CWSError on multiple contact email and certification errors', async ({ client }) => {
+    const errorResponse = {
+        error: {
+            code: 400,
+            message: 'Publish condition not met: You must provide a contact email before you can publish any item. Enter your contact email on the Account tab.; To publish your item, you must certify that your data usage complies with our Developer Program Policies. You can certify this on the Privacy practices tab of the item edit page.',
+            errors: [
+                {
+                    message: 'Publish condition not met: You must provide a contact email before you can publish any item. Enter your contact email on the Account tab.; To publish your item, you must certify that your data usage complies with our Developer Program Policies. You can certify this on the Privacy practices tab of the item edit page.',
+                    domain: 'chromewebstore.access',
+                    reason: 'badRequest',
+                },
+            ],
+        },
+    };
+
+    fetchMock.postOnce('https://www.googleapis.com/chromewebstore/v1.1/items/foo/publish?publishTarget=default', {
+        status: 400,
+        body: errorResponse,
+    });
+
+    try {
+        await client.publish('default', 'token');
+        assert.fail('Should have thrown an error');
+    } catch (error) {
+        expect(error).toBeInstanceOf(CWSError);
+        expect(error.message).toContain('contact email');
+        expect(error.message).toContain('certify');
+        expect(error.cause).toEqual(errorResponse);
+    }
+});
+
+test('Does not throw on successful upload', async ({ client }) => {
+    const successResponse = {
+        kind: 'chromewebstore#item',
+        id: 'foo',
+        uploadState: 'SUCCESS',
+        itemError: [],
+    };
+
+    fetchMock.putOnce('https://www.googleapis.com/upload/chromewebstore/v1.1/items/foo', {
+        status: 200,
+        body: successResponse,
+    });
+
+    const result = await client.uploadExisting({}, 'token');
+    expect(result).toEqual(successResponse);
+});
+
+test('Does not throw on successful publish', async ({ client }) => {
+    const successResponse = {
+        kind: 'chromewebstore#item',
+        item_id: 'foo',
+        status: ['OK'],
+        statusDetail: ['OK.'],
+    };
+
+    fetchMock.postOnce('https://www.googleapis.com/chromewebstore/v1.1/items/foo/publish?publishTarget=default', {
+        status: 200,
+        body: successResponse,
+    });
+
+    const result = await client.publish('default', 'token');
+    expect(result).toEqual(successResponse);
+});
