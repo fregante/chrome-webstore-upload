@@ -116,11 +116,17 @@ class APIClient {
         }
 
         // Convert string path (file or directory) to stream
-        const readStream: ReadStream | ReadableStream | NodeJS.ReadableStream = typeof streamOrPath === 'string'
-            ? (isArchive(streamOrPath)
-                ? fs.createReadStream(streamOrPath)
-                : await zipStreamFromDirectory(streamOrPath))
-            : streamOrPath;
+        let readStream: ReadStream | ReadableStream | NodeJS.ReadableStream;
+        if (typeof streamOrPath === 'string') {
+            // eslint-disable-next-line unicorn/prefer-ternary
+            if (isArchive(streamOrPath)) {
+                readStream = fs.createReadStream(streamOrPath);
+            } else {
+                readStream = await zipStreamFromDirectory(streamOrPath);
+            }
+        } else {
+            readStream = streamOrPath;
+        }
 
         const { extensionId } = this;
 

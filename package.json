@@ -40,11 +40,6 @@
     "upload": "npm run bundle && npm run test:upload"
   },
   "xo": {
-    "ignores": [
-      "index.js",
-      "index.d.ts",
-      "zip-dir.js"
-    ],
     "rules": {
       "camelcase": "off",
       "object-curly-spacing": [
@@ -80,7 +75,7 @@
     "xo": "^0.58.0"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "webExt": {
     "sourceDir": "test/extension"
