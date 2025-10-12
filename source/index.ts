@@ -2,7 +2,8 @@
 // https://developer.chrome.com/docs/webstore/api
 // https://developer.chrome.com/docs/webstore/using-api
 
-import { type ReadStream } from 'node:fs';
+import fs, { type ReadStream } from 'node:fs';
+import zipStreamFromDirectory from './zip-dir.js';
 
 const rootURI = 'https://www.googleapis.com';
 export const refreshTokenURI = 'https://www.googleapis.com/oauth2/v4/token';
@@ -28,6 +29,13 @@ const getURI = (id: string, projection: string) => `${rootURI}/chromewebstore/v1
 const requiredFields = ['extensionId', 'clientId', 'refreshToken'] as const;
 
 const retryIntervalSeconds = 2;
+
+async function getStreamFromPath(filepath: string): Promise<ReadStream | NodeJS.ReadableStream> {
+    const stats = await fs.promises.stat(filepath);
+    return stats.isFile()
+        ? fs.createReadStream(filepath)
+        : zipStreamFromDirectory(filepath);
+}
 
 export type APIClientOptions = {
     extensionId: string;
@@ -100,13 +108,18 @@ class APIClient {
     }
 
     async uploadExisting(
-        readStream: ReadStream | ReadableStream,
+        streamOrPath: ReadStream | ReadableStream | string,
         token: string | Promise<string> = this.fetchToken(),
         maxAwaitInProgressResponseSeconds = 0,
     ): Promise<ItemResource> {
-        if (!readStream) {
+        if (!streamOrPath) {
             throw new Error('Read stream missing');
         }
+
+        // Convert string path (file or directory) to stream
+        const readStream: ReadStream | ReadableStream | NodeJS.ReadableStream = typeof streamOrPath === 'string'
+            ? await getStreamFromPath(streamOrPath)
+            : streamOrPath;
 
         const { extensionId } = this;
 

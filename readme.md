@@ -33,15 +33,31 @@ const store = chromeWebstoreUpload({
 
 ### Upload to existing extension
 
+You can upload a zip file, crx file, or a directory. If you provide a directory, it will be automatically zipped.
+
 ```javascript
 import fs from 'fs';
 
+// Upload a zip file
 const myZipFile = fs.createReadStream('./mypackage.zip');
 const token = 'xxxx'; // optional. One will be fetched if not provided
 const maxAwaitInProgressResponseSeconds = 60; // optional. If the API response is IN_PROGRESS, this method will wait until it becomes successful, or until the specified timeout
 const response = await store.uploadExisting(myZipFile, token, maxAwaitInProgressResponseSeconds);
 // response is a Resource Representation
 // https://developer.chrome.com/webstore/webstore_api/items#resource
+```
+
+```javascript
+// Upload a directory (it will be zipped automatically)
+const response = await store.uploadExisting('./path/to/extension-directory', token, maxAwaitInProgressResponseSeconds);
+// The directory must contain a manifest.json file
+```
+
+```javascript
+// Upload a .zip or .crx file by path
+const response = await store.uploadExisting('./path/to/extension.zip', token, maxAwaitInProgressResponseSeconds);
+// or
+const response = await store.uploadExisting('./path/to/extension.crx', token, maxAwaitInProgressResponseSeconds);
 ```
 
 ### Publish extension

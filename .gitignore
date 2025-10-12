@@ -5,3 +5,5 @@ web-ext-artifacts
 test/extension/manifest.json
 index.js
 index.d.ts
+zip-dir.js
+zip-dir.d.ts
