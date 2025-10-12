@@ -5,3 +5,7 @@ web-ext-artifacts
 test/extension/manifest.json
 index.js
 index.d.ts
+errors.js
+errors.d.ts
+types.js
+types.d.ts

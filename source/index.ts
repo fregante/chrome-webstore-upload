@@ -3,6 +3,8 @@
 // https://developer.chrome.com/docs/webstore/using-api
 
 import { type ReadStream } from 'node:fs';
+import { throwIfNotOk } from './errors.js';
+import type { APIClientOptions, ItemResource, PublishResponse } from './types.js';
 
 const rootURI = 'https://www.googleapis.com';
 export const refreshTokenURI = 'https://www.googleapis.com/oauth2/v4/token';
@@ -29,112 +31,8 @@ const requiredFields = ['extensionId', 'clientId', 'refreshToken'] as const;
 
 const retryIntervalSeconds = 2;
 
-export type APIClientOptions = {
-    extensionId: string;
-    clientId: string;
-    refreshToken: string;
-    clientSecret: string | undefined;
-};
-
-export type ItemResource = {
-    kind: 'chromewebstore#item';
-    id: string;
-    publicKey: string;
-    uploadState: 'FAILURE' | 'IN_PROGRESS' | 'NOT_FOUND' | 'SUCCESS';
-    itemError: Array<{
-        error_code: string;
-        error_detail: string;
-    }>;
-};
-
-export type PublishResponse = {
-    kind: 'chromewebstore#item';
-    item_id: string;
-    status: Array<
-    | 'OK'
-    | 'NOT_AUTHORIZED'
-    | 'INVALID_DEVELOPER'
-    | 'DEVELOPER_NO_OWNERSHIP'
-    | 'DEVELOPER_SUSPENDED'
-    | 'ITEM_NOT_FOUND'
-    | 'ITEM_PENDING_REVIEW'
-    | 'ITEM_TAKEN_DOWN'
-    | 'PUBLISHER_SUSPENDED'
-    >;
-    statusDetail: string[];
-};
-
-export class CWSError extends Error {
-    override cause: unknown;
-
-    constructor(message: string, cause: unknown) {
-        super(message);
-        this.name = 'CWSError';
-        this.cause = cause;
-    }
-}
-
-type ErrorResponse = {
-    error?: {
-        code?: number;
-        message?: string;
-        errors?: Array<{
-            message?: string;
-            domain?: string;
-            reason?: string;
-        }>;
-    } | string;
-    error_code?: string;
-    error_description?: string;
-};
-
-function parseErrorMessage(response: unknown): string {
-    const errorResponse = response as ErrorResponse;
-
-    // Handle OAuth errors: { error: "invalid_grant", error_description: "Bad Request" }
-    if (typeof errorResponse.error === 'string') {
-        if (errorResponse.error === 'invalid_grant') {
-            return 'Invalid grant: The authentication keys are probably invalid or expired';
-        }
-
-        if (errorResponse.error === 'invalid_request') {
-            return `Invalid request: ${errorResponse.error_description ?? 'Missing required parameters'}`;
-        }
-
-        return errorResponse.error_description ?? errorResponse.error;
-    }
-
-    // Handle API errors: { error: { code: 400, message: "...", errors: [...] } }
-    if (errorResponse.error && typeof errorResponse.error === 'object') {
-        const { error } = errorResponse;
-        if (error.message) {
-            return error.message;
-        }
-    }
-
-    // Handle item errors in ItemResource: { itemError: [{ error_code: "...", error_detail: "..." }] }
-    const itemResource = response as ItemResource;
-    if (itemResource.itemError && Array.isArray(itemResource.itemError) && itemResource.itemError.length > 0) {
-        const errorDetails = itemResource.itemError.map(error => error.error_detail).join('; ');
-        return errorDetails;
-    }
-
-    return 'Unknown error';
-}
-
-function throwIfNotOk(request: Response, response: unknown) {
-    if (!request.ok) {
-        const message = parseErrorMessage(response);
-        throw new CWSError(message, response);
-    }
-
-    // Check for upload failure even on HTTP 200
-    const itemResource = response as Partial<ItemResource>;
-    if (itemResource.uploadState === 'FAILURE') {
-        const message = parseErrorMessage(response);
-        throw new CWSError(message, response);
-    }
-}
+export type { APIClientOptions, ItemResource, PublishResponse } from './types.js';
+export { CWSError } from './errors.js';
 
 class APIClient {
     extensionId: string;
