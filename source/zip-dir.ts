@@ -4,19 +4,17 @@ import { isNotJunk } from 'junk';
 import yazl from 'yazl';
 
 export default async function zipStreamFromDirectory(directory: string): Promise<NodeJS.ReadableStream> {
-    const files = await readdir(directory, { recursive: true });
-    const zip = new yazl.ZipFile();
-    let hasManifest = false;
+    const allFiles = await readdir(directory, { recursive: true });
+    const files = allFiles.filter(file => isNotJunk(basename(file)));
 
-    for (const file of files) {
-        if (isNotJunk(basename(file))) {
-            zip.addFile(join(directory, file), file);
-            hasManifest ||= file === 'manifest.json';
-        }
+    if (!files.includes('manifest.json')) {
+        throw new Error(`manifest.json was not found in ${directory}`);
     }
 
-    if (!hasManifest) {
-        throw new Error(`manifest.json was not found in ${directory}`);
+    const zip = new yazl.ZipFile();
+
+    for (const file of files) {
+        zip.addFile(join(directory, file), file);
     }
 
     zip.end();
