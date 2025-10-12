@@ -3,7 +3,6 @@
 // https://developer.chrome.com/docs/webstore/using-api
 
 import fs, { type ReadStream } from 'node:fs';
-import path from 'node:path';
 import zipStreamFromDirectory from './zip-dir.js';
 
 const rootURI = 'https://www.googleapis.com';
@@ -31,13 +30,9 @@ const requiredFields = ['extensionId', 'clientId', 'refreshToken'] as const;
 
 const retryIntervalSeconds = 2;
 
-function isArchive(filepath: string): boolean {
-    const extension = path.extname(filepath);
-    return extension === '.zip' || extension === '.crx';
-}
-
 async function getStreamFromPath(filepath: string): Promise<ReadStream | NodeJS.ReadableStream> {
-    return isArchive(filepath)
+    const stats = await fs.promises.stat(filepath);
+    return stats.isFile()
         ? fs.createReadStream(filepath)
         : zipStreamFromDirectory(filepath);
 }
