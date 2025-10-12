@@ -9,3 +9,5 @@ errors.js
 errors.d.ts
 types.js
 types.d.ts
+zip-dir.js
+zip-dir.d.ts
