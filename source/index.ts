@@ -3,6 +3,8 @@
 // https://developer.chrome.com/docs/webstore/using-api
 
 import fs, { type ReadStream } from 'node:fs';
+import { throwIfNotOk } from './errors.js';
+import type { APIClientOptions, ItemResource, PublishResponse } from './types.js';
 import zipStreamFromDirectory from './zip-dir.js';
 
 const rootURI = 'https://www.googleapis.com';
@@ -37,48 +39,8 @@ async function getStreamFromPath(filepath: string): Promise<ReadStream | NodeJS.
         : zipStreamFromDirectory(filepath);
 }
 
-export type APIClientOptions = {
-    extensionId: string;
-    clientId: string;
-    refreshToken: string;
-    clientSecret: string | undefined;
-};
-
-export type ItemResource = {
-    kind: 'chromewebstore#item';
-    id: string;
-    publicKey: string;
-    uploadState: 'FAILURE' | 'IN_PROGRESS' | 'NOT_FOUND' | 'SUCCESS';
-    itemError: Array<{
-        error_code: string;
-        error_detail: string;
-    }>;
-};
-
-export type PublishResponse = {
-    kind: 'chromewebstore#item';
-    item_id: string;
-    status: Array<
-    | 'OK'
-    | 'NOT_AUTHORIZED'
-    | 'INVALID_DEVELOPER'
-    | 'DEVELOPER_NO_OWNERSHIP'
-    | 'DEVELOPER_SUSPENDED'
-    | 'ITEM_NOT_FOUND'
-    | 'ITEM_PENDING_REVIEW'
-    | 'ITEM_TAKEN_DOWN'
-    | 'PUBLISHER_SUSPENDED'
-    >;
-    statusDetail: string[];
-};
-
-function throwIfNotOk(request: Response, response: unknown) {
-    if (!request.ok) {
-        const error = new Error(request.statusText ?? 'Unknown error');
-        (error as any).response = response;
-        throw error;
-    }
-}
+export type { APIClientOptions, ItemResource, PublishResponse } from './types.js';
+export { CWSError } from './errors.js';
 
 class APIClient {
     extensionId: string;
