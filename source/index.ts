@@ -2,7 +2,9 @@
 // https://developer.chrome.com/docs/webstore/api
 // https://developer.chrome.com/docs/webstore/using-api
 
-import { type ReadStream } from 'node:fs';
+import fs, { type ReadStream } from 'node:fs';
+import path from 'node:path';
+import zipStreamFromDirectory from './zip-dir.js';
 
 const rootURI = 'https://www.googleapis.com';
 export const refreshTokenURI = 'https://www.googleapis.com/oauth2/v4/token';
@@ -100,13 +102,20 @@ class APIClient {
     }
 
     async uploadExisting(
-        readStream: ReadStream | ReadableStream,
+        zipOrDirectory: ReadStream | ReadableStream | string,
         token: string | Promise<string> = this.fetchToken(),
         maxAwaitInProgressResponseSeconds = 0,
     ): Promise<ItemResource> {
-        if (!readStream) {
+        if (!zipOrDirectory) {
             throw new Error('Read stream missing');
         }
+
+        // Convert string path (file or directory) to stream
+        const readStream: ReadStream | ReadableStream | NodeJS.ReadableStream = typeof zipOrDirectory === 'string'
+            ? (path.extname(zipOrDirectory) === '.zip'
+                ? fs.createReadStream(zipOrDirectory)
+                : await zipStreamFromDirectory(zipOrDirectory))
+            : zipOrDirectory;
 
         const { extensionId } = this;
 

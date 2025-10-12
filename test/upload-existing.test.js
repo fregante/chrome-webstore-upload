@@ -81,3 +81,21 @@ test('Upload retries if response returns IN_PROGRESS', async ({ client }) => {
     assert.deepEqual(response, bodySuccess);
     expect(getSpy).toHaveBeenCalledTimes(2);
 });
+
+test('Upload accepts directory path and zips it', async ({ client }) => {
+    fetchMock.putOnce('https://www.googleapis.com/upload/chromewebstore/v1.1/items/foo', {
+        uploadState: 'SUCCESS',
+    });
+
+    stubTokenRequest();
+
+    const response = await client.uploadExisting('./test/fixtures/valid-extension');
+    assert.equal(response.uploadState, 'SUCCESS');
+});
+
+test('Upload rejects invalid directory path', async ({ client }) => {
+    stubTokenRequest();
+
+    await expect(client.uploadExisting('./non-existent-directory')).rejects.toThrow();
+});
+

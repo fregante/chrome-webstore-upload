@@ -24,7 +24,9 @@
   "types": "./index.d.ts",
   "files": [
     "index.js",
-    "index.d.ts"
+    "index.d.ts",
+    "zip-dir.js",
+    "zip-dir.d.ts"
   ],
   "scripts": {
     "prebundle": "dot-json test/extension/manifest.json version $(utc-version)",
@@ -38,6 +40,12 @@
     "upload": "npm run bundle && npm run test:upload"
   },
   "xo": {
+    "ignores": [
+      "index.js",
+      "index.d.ts",
+      "zip-dir.js",
+      "zip-dir.d.ts"
+    ],
     "rules": {
       "camelcase": "off",
       "object-curly-spacing": [
@@ -63,6 +71,8 @@
   },
   "devDependencies": {
     "@sindresorhus/tsconfig": "^5.0.0",
+    "@types/recursive-readdir": "^2.2.4",
+    "@types/yazl": "^3.3.0",
     "dot-json": "^1.3.0",
     "fetch-mock": "^9.11.0",
     "node-fetch": "^2.7.0",
@@ -76,5 +86,10 @@
   },
   "webExt": {
     "sourceDir": "test/extension"
+  },
+  "dependencies": {
+    "junk": "^4.0.1",
+    "recursive-readdir": "^2.2.3",
+    "yazl": "^3.3.1"
   }
 }
