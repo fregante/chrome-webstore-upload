@@ -39,7 +39,8 @@ function parseErrorMessage(response: unknown): string {
     if (errorResponse.error && typeof errorResponse.error === 'object') {
         const { error } = errorResponse;
         if (error.message) {
-            return error.message;
+            // Remove "Publish condition not met: " prefix if present
+            return error.message.replace(/^Publish condition not met: /, '');
         }
     }
 

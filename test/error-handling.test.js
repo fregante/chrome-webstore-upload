@@ -85,7 +85,7 @@ test('Throws CWSError on publish condition not met', async ({ client }) => {
         assert.fail('Should have thrown an error');
     } catch (error) {
         expect(error).toBeInstanceOf(CWSError);
-        expect(error.message).toMatch(/Publish condition not met.*item that is in review/);
+        expect(error.message).toMatch(/You may not edit or publish an item that is in review/);
     }
 });
 
