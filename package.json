@@ -25,6 +25,8 @@
   "files": [
     "index.js",
     "index.d.ts",
+    "pack-crx.js",
+    "pack-crx.d.ts",
     "zip-dir.js",
     "zip-dir.d.ts"
   ],

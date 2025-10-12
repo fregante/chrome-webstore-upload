@@ -3,6 +3,7 @@ export type APIClientOptions = {
     clientId: string;
     refreshToken: string;
     clientSecret: string | undefined;
+    packExtensionKey?: string;
 };
 
 export type ItemResource = {

@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import {
     test, assert, expect, beforeEach, vi, afterEach,
 } from 'vitest';
@@ -110,3 +111,39 @@ test('Upload accepts .crx file path', async ({ client }) => {
     assert.equal(response.uploadState, 'SUCCESS');
 });
 
+test('Upload with packExtensionKey packs directory and uploads CRX', async () => {
+    const client = getClient();
+    client.packExtensionKey = './test/fixtures/valid-extension.pem';
+
+    fetchMock.putOnce('https://www.googleapis.com/upload/chromewebstore/v1.1/items/foo', {
+        uploadState: 'SUCCESS',
+    });
+
+    stubTokenRequest();
+
+    const response = await client.uploadExisting('./test/fixtures/valid-extension');
+    assert.equal(response.uploadState, 'SUCCESS');
+
+    // Clean up generated CRX
+    await fs.promises.unlink('./test/fixtures/valid-extension.crx').catch(() => {});
+});
+
+test('Upload with packExtensionKey rejects zip file path', async () => {
+    const client = getClient();
+    client.packExtensionKey = './test/fixtures/valid-extension.pem';
+
+    stubTokenRequest();
+
+    await expect(client.uploadExisting('./test/fixtures/test.crx'))
+        .rejects.toThrow('only directories are accepted');
+});
+
+test('Upload with packExtensionKey rejects non-existent key', async () => {
+    const client = getClient();
+    client.packExtensionKey = './non-existent.pem';
+
+    stubTokenRequest();
+
+    await expect(client.uploadExisting('./test/fixtures/valid-extension'))
+        .rejects.toThrow();
+});

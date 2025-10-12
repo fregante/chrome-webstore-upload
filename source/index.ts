@@ -6,6 +6,7 @@ import fs, { type ReadStream } from 'node:fs';
 import { throwIfNotOk } from './errors.js';
 import type { APIClientOptions, ItemResource, PublishResponse } from './types.js';
 import zipStreamFromDirectory from './zip-dir.js';
+import packCRX from './pack-crx.js';
 
 const rootURI = 'https://www.googleapis.com';
 export const refreshTokenURI = 'https://www.googleapis.com/oauth2/v4/token';
@@ -32,11 +33,26 @@ const requiredFields = ['extensionId', 'clientId', 'refreshToken'] as const;
 
 const retryIntervalSeconds = 2;
 
-async function getStreamFromPath(filepath: string): Promise<ReadStream | NodeJS.ReadableStream> {
+async function getStreamFromPath(filepath: string, packExtensionKey?: string): Promise<ReadStream | NodeJS.ReadableStream> {
     const stats = await fs.promises.stat(filepath);
-    return stats.isFile()
-        ? fs.createReadStream(filepath)
-        : zipStreamFromDirectory(filepath);
+
+    if (stats.isFile()) {
+        if (packExtensionKey) {
+            throw new Error('When using packExtensionKey, only directories are accepted as input, not zip or crx files');
+        }
+
+        return fs.createReadStream(filepath);
+    }
+
+    // It's a directory
+    if (packExtensionKey) {
+        // Pack the directory as a CRX using Chrome
+        const crxPath = await packCRX(filepath, packExtensionKey);
+        return fs.createReadStream(crxPath);
+    }
+
+    // Default: zip the directory
+    return zipStreamFromDirectory(filepath);
 }
 
 export type { APIClientOptions, ItemResource, PublishResponse } from './types.js';
@@ -47,6 +63,7 @@ class APIClient {
     clientId: string;
     refreshToken: string;
     clientSecret: string | undefined;
+    packExtensionKey: string | undefined;
 
     constructor(options: APIClientOptions) {
         if (typeof fetch !== 'function') {
@@ -67,6 +84,7 @@ class APIClient {
         this.clientId = options.clientId;
         this.refreshToken = options.refreshToken;
         this.clientSecret = options.clientSecret;
+        this.packExtensionKey = options.packExtensionKey;
     }
 
     async uploadExisting(
@@ -80,7 +98,7 @@ class APIClient {
 
         // Convert string path (file or directory) to stream
         const readStream: ReadStream | ReadableStream | NodeJS.ReadableStream = typeof streamOrPath === 'string'
-            ? await getStreamFromPath(streamOrPath)
+            ? await getStreamFromPath(streamOrPath, this.packExtensionKey)
             : streamOrPath;
 
         const { extensionId } = this;

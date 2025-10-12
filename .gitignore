@@ -3,6 +3,7 @@ npm-debug.log
 web-ext-artifacts
 .env
 test/extension/manifest.json
+test/fixtures/valid-extension.crx
 index.js
 index.d.ts
 errors.js
@@ -11,3 +12,5 @@ types.js
 types.d.ts
 zip-dir.js
 zip-dir.d.ts
+pack-crx.js
+pack-crx.d.ts
