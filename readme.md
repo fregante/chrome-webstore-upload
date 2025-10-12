@@ -33,7 +33,7 @@ const store = chromeWebstoreUpload({
 
 ### Upload to existing extension
 
-You can upload either a zip file or a directory. If you provide a directory, it will be automatically zipped.
+You can upload a zip file, crx file, or a directory. If you provide a directory, it will be automatically zipped.
 
 ```javascript
 import fs from 'fs';
@@ -51,6 +51,13 @@ const response = await store.uploadExisting(myZipFile, token, maxAwaitInProgress
 // Upload a directory (it will be zipped automatically)
 const response = await store.uploadExisting('./path/to/extension-directory', token, maxAwaitInProgressResponseSeconds);
 // The directory must contain a manifest.json file
+```
+
+```javascript
+// Upload a .zip or .crx file by path
+const response = await store.uploadExisting('./path/to/extension.zip', token, maxAwaitInProgressResponseSeconds);
+// or
+const response = await store.uploadExisting('./path/to/extension.crx', token, maxAwaitInProgressResponseSeconds);
 ```
 
 ### Publish extension

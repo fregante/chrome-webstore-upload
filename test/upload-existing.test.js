@@ -99,3 +99,14 @@ test('Upload rejects invalid directory path', async ({ client }) => {
     await expect(client.uploadExisting('./non-existent-directory')).rejects.toThrow();
 });
 
+test('Upload accepts .crx file path', async ({ client }) => {
+    fetchMock.putOnce('https://www.googleapis.com/upload/chromewebstore/v1.1/items/foo', {
+        uploadState: 'SUCCESS',
+    });
+
+    stubTokenRequest();
+
+    const response = await client.uploadExisting('./test/fixtures/test.crx');
+    assert.equal(response.uploadState, 'SUCCESS');
+});
+

@@ -112,7 +112,7 @@ class APIClient {
 
         // Convert string path (file or directory) to stream
         const readStream: ReadStream | ReadableStream | NodeJS.ReadableStream = typeof zipOrDirectory === 'string'
-            ? (path.extname(zipOrDirectory) === '.zip'
+            ? (['.zip', '.crx'].includes(path.extname(zipOrDirectory))
                 ? fs.createReadStream(zipOrDirectory)
                 : await zipStreamFromDirectory(zipOrDirectory))
             : zipOrDirectory;
