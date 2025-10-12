@@ -1,4 +1,5 @@
-import { readdir, stat } from 'node:fs/promises';
+import { readdir } from 'node:fs/promises';
+import { statSync } from 'node:fs';
 import { basename, join } from 'node:path';
 import { isNotJunk } from 'junk';
 import yazl from 'yazl';
@@ -9,15 +10,9 @@ export default async function zipStreamFromDirectory(directory: string): Promise
     let hasManifest = false;
 
     for (const file of files) {
-        if (typeof file !== 'string') {
-            continue;
-        }
-
         const fullPath = join(directory, file);
-        // eslint-disable-next-line no-await-in-loop
-        const stats = await stat(fullPath);
 
-        if (stats.isFile() && isNotJunk(basename(file))) {
+        if (statSync(fullPath).isFile() && isNotJunk(basename(file))) {
             zip.addFile(fullPath, file);
             hasManifest ||= file === 'manifest.json';
         }

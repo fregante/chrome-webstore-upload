@@ -36,6 +36,12 @@ function isArchive(filepath: string): boolean {
     return extension === '.zip' || extension === '.crx';
 }
 
+async function getStreamFromPath(filepath: string): Promise<ReadStream | NodeJS.ReadableStream> {
+    return isArchive(filepath)
+        ? fs.createReadStream(filepath)
+        : zipStreamFromDirectory(filepath);
+}
+
 export type APIClientOptions = {
     extensionId: string;
     clientId: string;
@@ -116,17 +122,9 @@ class APIClient {
         }
 
         // Convert string path (file or directory) to stream
-        let readStream: ReadStream | ReadableStream | NodeJS.ReadableStream;
-        if (typeof streamOrPath === 'string') {
-            // eslint-disable-next-line unicorn/prefer-ternary
-            if (isArchive(streamOrPath)) {
-                readStream = fs.createReadStream(streamOrPath);
-            } else {
-                readStream = await zipStreamFromDirectory(streamOrPath);
-            }
-        } else {
-            readStream = streamOrPath;
-        }
+        const readStream: ReadStream | ReadableStream | NodeJS.ReadableStream = typeof streamOrPath === 'string'
+            ? await getStreamFromPath(streamOrPath)
+            : streamOrPath;
 
         const { extensionId } = this;
 
