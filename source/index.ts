@@ -31,6 +31,11 @@ const requiredFields = ['extensionId', 'clientId', 'refreshToken'] as const;
 
 const retryIntervalSeconds = 2;
 
+function isArchive(filepath: string): boolean {
+    const extension = path.extname(filepath);
+    return extension === '.zip' || extension === '.crx';
+}
+
 export type APIClientOptions = {
     extensionId: string;
     clientId: string;
@@ -102,20 +107,20 @@ class APIClient {
     }
 
     async uploadExisting(
-        zipOrDirectory: ReadStream | ReadableStream | string,
+        streamOrPath: ReadStream | ReadableStream | string,
         token: string | Promise<string> = this.fetchToken(),
         maxAwaitInProgressResponseSeconds = 0,
     ): Promise<ItemResource> {
-        if (!zipOrDirectory) {
+        if (!streamOrPath) {
             throw new Error('Read stream missing');
         }
 
         // Convert string path (file or directory) to stream
-        const readStream: ReadStream | ReadableStream | NodeJS.ReadableStream = typeof zipOrDirectory === 'string'
-            ? (['.zip', '.crx'].includes(path.extname(zipOrDirectory))
-                ? fs.createReadStream(zipOrDirectory)
-                : await zipStreamFromDirectory(zipOrDirectory))
-            : zipOrDirectory;
+        const readStream: ReadStream | ReadableStream | NodeJS.ReadableStream = typeof streamOrPath === 'string'
+            ? (isArchive(streamOrPath)
+                ? fs.createReadStream(streamOrPath)
+                : await zipStreamFromDirectory(streamOrPath))
+            : streamOrPath;
 
         const { extensionId } = this;
 
