@@ -32,6 +32,13 @@ const requiredFields = ['extensionId', 'clientId', 'refreshToken'] as const;
 
 const retryIntervalSeconds = 2;
 
+async function getStreamFromPath(filepath: string): Promise<ReadStream | NodeJS.ReadableStream> {
+    const stats = await fs.promises.stat(filepath);
+    return stats.isFile()
+        ? fs.createReadStream(filepath)
+        : zipStreamFromDirectory(filepath);
+}
+
 export type { APIClientOptions, ItemResource, PublishResponse } from './types.js';
 export { CWSError } from './errors.js';
 
@@ -72,17 +79,10 @@ class APIClient {
         }
 
         // Convert string path (file or directory) to stream
-        let readStream: ReadStream | ReadableStream | NodeJS.ReadableStream;
         const fileName = typeof streamOrPath === 'string' && streamOrPath.endsWith('.crx') ? 'extension.crx' : 'extension.zip';
-
-        if (typeof streamOrPath === 'string') {
-            const stats = await fs.promises.stat(streamOrPath);
-            readStream = stats.isFile()
-                ? fs.createReadStream(streamOrPath)
-                : await zipStreamFromDirectory(streamOrPath);
-        } else {
-            readStream = streamOrPath;
-        }
+        const readStream: ReadStream | ReadableStream | NodeJS.ReadableStream = typeof streamOrPath === 'string'
+            ? await getStreamFromPath(streamOrPath)
+            : streamOrPath;
 
         const { extensionId } = this;
 
