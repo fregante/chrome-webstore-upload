@@ -3,7 +3,6 @@
 // https://developer.chrome.com/docs/webstore/using-api
 
 import fs, { type ReadStream } from 'node:fs';
-import { basename } from 'node:path';
 import { throwIfNotOk } from './errors.js';
 import type { APIClientOptions, ItemResource, PublishResponse } from './types.js';
 import zipStreamFromDirectory from './zip-dir.js';
@@ -32,15 +31,6 @@ const getURI = (id: string, projection: string) => `${rootURI}/chromewebstore/v1
 const requiredFields = ['extensionId', 'clientId', 'refreshToken'] as const;
 
 const retryIntervalSeconds = 2;
-
-function getFileNameFromPath(filepath: string, stats: fs.Stats): string {
-    if (stats.isFile()) {
-        return basename(filepath);
-    }
-
-    // For directories, use extension.zip as the filename
-    return 'extension.zip';
-}
 
 export type { APIClientOptions, ItemResource, PublishResponse } from './types.js';
 export { CWSError } from './errors.js';
@@ -83,18 +73,15 @@ class APIClient {
 
         // Convert string path (file or directory) to stream
         let readStream: ReadStream | ReadableStream | NodeJS.ReadableStream;
-        let fileName: string | undefined;
+        const fileName = typeof streamOrPath === 'string' && streamOrPath.endsWith('.crx') ? 'extension.crx' : 'extension.zip';
 
         if (typeof streamOrPath === 'string') {
             const stats = await fs.promises.stat(streamOrPath);
-            fileName = getFileNameFromPath(streamOrPath, stats);
             readStream = stats.isFile()
                 ? fs.createReadStream(streamOrPath)
                 : await zipStreamFromDirectory(streamOrPath);
         } else {
             readStream = streamOrPath;
-            // Default filename for streams
-            fileName = 'extension.zip';
         }
 
         const { extensionId } = this;

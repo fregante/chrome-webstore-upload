@@ -135,7 +135,7 @@ test('Upload includes X-Goog-Upload-File-Name header with file name from .crx fi
 
     const calls = fetchMock.calls('https://www.googleapis.com/upload/chromewebstore/v1.1/items/foo');
     const { headers } = calls[0][1];
-    assert.equal(headers['X-Goog-Upload-File-Name'], 'test.crx');
+    assert.equal(headers['X-Goog-Upload-File-Name'], 'extension.crx');
 });
 
 test('Upload includes X-Goog-Upload-File-Name header with extension.zip for directory', async ({ client }) => {
