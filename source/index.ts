@@ -3,6 +3,7 @@
 // https://developer.chrome.com/docs/webstore/using-api
 
 import fs, { type ReadStream } from 'node:fs';
+import { basename } from 'node:path';
 import { throwIfNotOk } from './errors.js';
 import type { APIClientOptions, ItemResource, PublishResponse } from './types.js';
 import zipStreamFromDirectory from './zip-dir.js';
@@ -32,11 +33,13 @@ const requiredFields = ['extensionId', 'clientId', 'refreshToken'] as const;
 
 const retryIntervalSeconds = 2;
 
-async function getStreamFromPath(filepath: string): Promise<ReadStream | NodeJS.ReadableStream> {
-    const stats = await fs.promises.stat(filepath);
-    return stats.isFile()
-        ? fs.createReadStream(filepath)
-        : zipStreamFromDirectory(filepath);
+function getFileNameFromPath(filepath: string, stats: fs.Stats): string {
+    if (stats.isFile()) {
+        return basename(filepath);
+    }
+
+    // For directories, use extension.zip as the filename
+    return 'extension.zip';
 }
 
 export type { APIClientOptions, ItemResource, PublishResponse } from './types.js';
@@ -79,15 +82,26 @@ class APIClient {
         }
 
         // Convert string path (file or directory) to stream
-        const readStream: ReadStream | ReadableStream | NodeJS.ReadableStream = typeof streamOrPath === 'string'
-            ? await getStreamFromPath(streamOrPath)
-            : streamOrPath;
+        let readStream: ReadStream | ReadableStream | NodeJS.ReadableStream;
+        let fileName: string | undefined;
+
+        if (typeof streamOrPath === 'string') {
+            const stats = await fs.promises.stat(streamOrPath);
+            fileName = getFileNameFromPath(streamOrPath, stats);
+            readStream = stats.isFile()
+                ? fs.createReadStream(streamOrPath)
+                : await zipStreamFromDirectory(streamOrPath);
+        } else {
+            readStream = streamOrPath;
+            // Default filename for streams
+            fileName = 'extension.zip';
+        }
 
         const { extensionId } = this;
 
         const request = await fetch(uploadExistingURI(extensionId), {
             method: 'PUT',
-            headers: this._headers(await token),
+            headers: this._uploadHeaders(await token, fileName),
             // @ts-expect-error Node extension? 🤷‍♂️ Required https://github.com/nodejs/node/issues/46221
             duplex: 'half',
 
@@ -183,6 +197,19 @@ class APIClient {
         return {
             Authorization: `Bearer ${token}`,
             'x-goog-api-version': '2',
+        };
+    }
+
+    _uploadHeaders(token: string, fileName: string): {
+        Authorization: string;
+        'x-goog-api-version': string;
+        'X-Goog-Upload-Protocol': string;
+        'X-Goog-Upload-File-Name': string;
+    } {
+        return {
+            ...this._headers(token),
+            'X-Goog-Upload-Protocol': 'raw',
+            'X-Goog-Upload-File-Name': fileName,
         };
     }
 }

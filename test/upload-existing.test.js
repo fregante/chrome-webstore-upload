@@ -110,3 +110,59 @@ test('Upload accepts .crx file path', async ({ client }) => {
     assert.equal(response.uploadState, 'SUCCESS');
 });
 
+test('Upload includes X-Goog-Upload-Protocol header', async ({ client }) => {
+    fetchMock.putOnce('https://www.googleapis.com/upload/chromewebstore/v1.1/items/foo', {
+        uploadState: 'SUCCESS',
+    });
+
+    stubTokenRequest();
+
+    await client.uploadExisting('./test/fixtures/test.crx');
+
+    const calls = fetchMock.calls('https://www.googleapis.com/upload/chromewebstore/v1.1/items/foo');
+    const { headers } = calls[0][1];
+    assert.equal(headers['X-Goog-Upload-Protocol'], 'raw');
+});
+
+test('Upload includes X-Goog-Upload-File-Name header with file name from .crx file', async ({ client }) => {
+    fetchMock.putOnce('https://www.googleapis.com/upload/chromewebstore/v1.1/items/foo', {
+        uploadState: 'SUCCESS',
+    });
+
+    stubTokenRequest();
+
+    await client.uploadExisting('./test/fixtures/test.crx');
+
+    const calls = fetchMock.calls('https://www.googleapis.com/upload/chromewebstore/v1.1/items/foo');
+    const { headers } = calls[0][1];
+    assert.equal(headers['X-Goog-Upload-File-Name'], 'test.crx');
+});
+
+test('Upload includes X-Goog-Upload-File-Name header with extension.zip for directory', async ({ client }) => {
+    fetchMock.putOnce('https://www.googleapis.com/upload/chromewebstore/v1.1/items/foo', {
+        uploadState: 'SUCCESS',
+    });
+
+    stubTokenRequest();
+
+    await client.uploadExisting('./test/fixtures/valid-extension');
+
+    const calls = fetchMock.calls('https://www.googleapis.com/upload/chromewebstore/v1.1/items/foo');
+    const { headers } = calls[0][1];
+    assert.equal(headers['X-Goog-Upload-File-Name'], 'extension.zip');
+});
+
+test('Upload includes X-Goog-Upload-File-Name header with extension.zip for stream', async ({ client }) => {
+    fetchMock.putOnce('https://www.googleapis.com/upload/chromewebstore/v1.1/items/foo', {
+        uploadState: 'SUCCESS',
+    });
+
+    stubTokenRequest();
+
+    await client.uploadExisting({});
+
+    const calls = fetchMock.calls('https://www.googleapis.com/upload/chromewebstore/v1.1/items/foo');
+    const { headers } = calls[0][1];
+    assert.equal(headers['X-Goog-Upload-File-Name'], 'extension.zip');
+});
+
