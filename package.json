@@ -34,7 +34,7 @@
     "prepack": "npm run build",
     "test": "xo && vitest run && tsc",
     "test:upload": "eval $(cat .env) node test/live-test.js",
-    "upload": "npm run bundle && npm run test:upload"
+    "upload": "npm run build && npm run bundle && npm run test:upload"
   },
   "xo": {
     "rules": {
