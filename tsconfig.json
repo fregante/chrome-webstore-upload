@@ -1,7 +1,7 @@
 {
   "extends": "@sindresorhus/tsconfig",
   "compilerOptions": {
-    "outDir": ".",
+    "outDir": "distribution",
   },
   "files": [
     "source/index.ts"
