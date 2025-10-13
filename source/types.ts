@@ -20,15 +20,15 @@ export type PublishResponse = {
     kind: 'chromewebstore#item';
     item_id: string;
     status: Array<
-    | 'OK'
-    | 'NOT_AUTHORIZED'
-    | 'INVALID_DEVELOPER'
-    | 'DEVELOPER_NO_OWNERSHIP'
-    | 'DEVELOPER_SUSPENDED'
-    | 'ITEM_NOT_FOUND'
-    | 'ITEM_PENDING_REVIEW'
-    | 'ITEM_TAKEN_DOWN'
-    | 'PUBLISHER_SUSPENDED'
+        | 'OK'
+        | 'NOT_AUTHORIZED'
+        | 'INVALID_DEVELOPER'
+        | 'DEVELOPER_NO_OWNERSHIP'
+        | 'DEVELOPER_SUSPENDED'
+        | 'ITEM_NOT_FOUND'
+        | 'ITEM_PENDING_REVIEW'
+        | 'ITEM_TAKEN_DOWN'
+        | 'PUBLISHER_SUSPENDED'
     >;
     statusDetail: string[];
 };

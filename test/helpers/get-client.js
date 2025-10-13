@@ -1,4 +1,4 @@
-import webStoreUpload from '../../source/index.ts';
+import webStoreUpload from '../../source/index.js';
 
 export default function getClient() {
     return webStoreUpload({

@@ -2,7 +2,7 @@ import {
     test, expect, beforeEach, assert,
 } from 'vitest';
 import fetchMock from 'fetch-mock';
-import { CWSError } from '../source/index.ts';
+import { CWSError } from '../source/index.js';
 import getClient from './helpers/get-client.js';
 
 beforeEach(context => {
