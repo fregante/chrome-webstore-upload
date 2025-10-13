@@ -1,9 +1,6 @@
 {
   "extends": "@sindresorhus/tsconfig",
-  "compilerOptions": {
-    "outDir": ".",
-  },
-  "files": [
-    "source/index.ts"
+  "include": [
+    "source"
   ]
 }

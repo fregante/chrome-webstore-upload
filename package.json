@@ -20,13 +20,10 @@
     "Federico Brigante <me@fregante.com> (https://fregante.com)"
   ],
   "type": "module",
-  "exports": "./index.js",
-  "types": "./index.d.ts",
+  "exports": "./distribution/index.js",
+  "types": "./distribution/index.d.ts",
   "files": [
-    "index.js",
-    "index.d.ts",
-    "zip-dir.js",
-    "zip-dir.d.ts"
+    "distribution"
   ],
   "scripts": {
     "prebundle": "dot-json test/extension/manifest.json version $(utc-version)",
