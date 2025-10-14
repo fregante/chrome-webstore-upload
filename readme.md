@@ -33,7 +33,7 @@ const store = chromeWebstoreUpload({
 
 ### Upload to existing extension
 
-You can upload a zip file, crx file, or a directory. If you provide a directory, it will be automatically zipped.
+You can upload a zip file, crx file, or a directory. If you provide a directory, it will be automatically zipped. Crx files are only supported as path, not as stream.
 
 ```javascript
 import fs from 'fs';
