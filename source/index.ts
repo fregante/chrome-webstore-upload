@@ -79,6 +79,7 @@ class APIClient {
         }
 
         // Convert string path (file or directory) to stream
+        const fileName = typeof streamOrPath === 'string' && streamOrPath.endsWith('.crx') ? 'extension.crx' : 'extension.zip';
         const readStream: ReadStream | ReadableStream | NodeJS.ReadableStream = typeof streamOrPath === 'string'
             ? await getStreamFromPath(streamOrPath)
             : streamOrPath;
@@ -87,7 +88,7 @@ class APIClient {
 
         const request = await fetch(uploadExistingURI(extensionId), {
             method: 'PUT',
-            headers: this._headers(await token),
+            headers: this._uploadHeaders(await token, fileName),
             // @ts-expect-error Node extension? 🤷‍♂️ Required https://github.com/nodejs/node/issues/46221
             duplex: 'half',
 
@@ -183,6 +184,19 @@ class APIClient {
         return {
             Authorization: `Bearer ${token}`,
             'x-goog-api-version': '2',
+        };
+    }
+
+    _uploadHeaders(token: string, fileName: string): {
+        Authorization: string;
+        'x-goog-api-version': string;
+        'X-Goog-Upload-Protocol': string;
+        'X-Goog-Upload-File-Name': string;
+    } {
+        return {
+            ...this._headers(token),
+            'X-Goog-Upload-Protocol': 'raw',
+            'X-Goog-Upload-File-Name': fileName,
         };
     }
 }
