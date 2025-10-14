@@ -13,7 +13,7 @@ beforeEach(context => {
 test('Throws CWSError on invalid grant OAuth error', async ({ client }) => {
     const errorResponse = {
         error: 'invalid_grant',
-        error_description: 'Bad Request',
+        error_description: 'Token has been expired or revoked.',
     };
 
     fetchMock.post('https://www.googleapis.com/oauth2/v4/token', {
@@ -28,7 +28,7 @@ test('Throws CWSError on invalid grant OAuth error', async ({ client }) => {
 test('Throws CWSError with cause on invalid grant error', async ({ client }) => {
     const errorResponse = {
         error: 'invalid_grant',
-        error_description: 'Bad Request',
+        error_description: 'Token has been expired or revoked.',
     };
 
     fetchMock.post('https://www.googleapis.com/oauth2/v4/token', {
@@ -58,6 +58,38 @@ test('Throws CWSError on invalid request OAuth error', async ({ client }) => {
 
     await expect(client.fetchToken()).rejects.toThrow(CWSError);
     await expect(client.fetchToken()).rejects.toThrow(/Invalid request.*client_secret is missing/);
+});
+
+test('Throws CWSError on OAuth client not found', async ({ client }) => {
+    const errorResponse = {
+        error: 'invalid_grant',
+        error_description: 'The OAuth client was not found.',
+    };
+
+    fetchMock.post('https://www.googleapis.com/oauth2/v4/token', {
+        status: 400,
+        body: errorResponse,
+    });
+
+    await expect(client.fetchToken()).rejects.toThrow(CWSError);
+    await expect(client.fetchToken()).rejects.toThrow(/OAuth client was not found.*client ID is probably not valid/);
+    await expect(client.fetchToken()).rejects.toThrow(/chrome-webstore-upload-keys/);
+});
+
+test('Throws CWSError on invalid grant with Bad Request description', async ({ client }) => {
+    const errorResponse = {
+        error: 'invalid_grant',
+        error_description: 'Bad Request',
+    };
+
+    fetchMock.post('https://www.googleapis.com/oauth2/v4/token', {
+        status: 400,
+        body: errorResponse,
+    });
+
+    await expect(client.fetchToken()).rejects.toThrow(CWSError);
+    await expect(client.fetchToken()).rejects.toThrow(/Bad Request.*refresh token is probably not valid/);
+    await expect(client.fetchToken()).rejects.toThrow(/chrome-webstore-upload-keys/);
 });
 
 test('Throws CWSError on publish condition not met', async ({ client }) => {

@@ -25,6 +25,15 @@ function parseErrorMessage(response: unknown): string {
     // Handle OAuth errors: { error: "invalid_grant", error_description: "Bad Request" }
     if (typeof errorResponse.error === 'string') {
         if (errorResponse.error === 'invalid_grant') {
+            // Check for specific error_description values
+            if (errorResponse.error_description === 'The OAuth client was not found.') {
+                return 'Invalid grant: The OAuth client was not found. The provided client ID is probably not valid. Try following the guide: https://github.com/fregante/chrome-webstore-upload-keys';
+            }
+
+            if (errorResponse.error_description === 'Bad Request') {
+                return 'Invalid grant: Bad Request. The provided refresh token is probably not valid. Try following the guide: https://github.com/fregante/chrome-webstore-upload-keys';
+            }
+
             return 'Invalid grant: The authentication keys are probably invalid or expired';
         }
 
@@ -49,6 +58,11 @@ function parseErrorMessage(response: unknown): string {
     if (itemResource.itemError && Array.isArray(itemResource.itemError) && itemResource.itemError.length > 0) {
         const errorDetails = itemResource.itemError.map(error => error.error_detail).join('; ');
         return errorDetails;
+    }
+
+    // Handle IN_PROGRESS upload state
+    if (itemResource.uploadState === 'IN_PROGRESS') {
+        return 'Upload is in progress. Try setting or increasing the maxAwaitInProgressResponseSeconds parameter to wait for the upload to complete';
     }
 
     return 'Unknown error';
