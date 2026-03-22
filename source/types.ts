@@ -1,34 +1,36 @@
 export type APIClientOptions = {
     extensionId: string;
+    publisherId: string;
     clientId: string;
     refreshToken: string;
     clientSecret: string | undefined;
 };
 
 export type ItemResource = {
-    kind: 'chromewebstore#item';
-    id: string;
-    publicKey: string;
-    uploadState: 'FAILURE' | 'IN_PROGRESS' | 'NOT_FOUND' | 'SUCCESS';
-    itemError: Array<{
-        error_code: string;
-        error_detail: string;
-    }>;
+    crxVersion: string;
+    itemId: string;
+    name: string;
+    uploadState: string;
 };
 
+export type PublishType =
+    | 'PUBLISH_TYPE_UNSPECIFIED'
+    | 'DEFAULT_PUBLISH'
+    | 'TRUSTED_TESTERS'
+    | 'STAGED_PUBLISH';
+
 export type PublishResponse = {
-    kind: 'chromewebstore#item';
-    item_id: string;
-    status: Array<
-        | 'OK'
-        | 'NOT_AUTHORIZED'
-        | 'INVALID_DEVELOPER'
-        | 'DEVELOPER_NO_OWNERSHIP'
-        | 'DEVELOPER_SUSPENDED'
-        | 'ITEM_NOT_FOUND'
-        | 'ITEM_PENDING_REVIEW'
-        | 'ITEM_TAKEN_DOWN'
-        | 'PUBLISHER_SUSPENDED'
-    >;
-    statusDetail: string[];
+    itemId: string;
+    name: string;
+    state: string;
+};
+
+export type ItemStatusResponse = {
+    itemId: string;
+    lastAsyncUploadState: string;
+    name: string;
+    publicKey: string;
+    publishedItemRevisionStatus: unknown;
+    submittedItemRevisionStatus: unknown;
+    takenDown: boolean;
 };

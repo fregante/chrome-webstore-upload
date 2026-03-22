@@ -14,6 +14,8 @@ npm install --save-dev chrome-webstore-upload
 
 You will need a Google API `clientId`, `clientSecret` and `refreshToken`. Use [the guide]( https://github.com/fregante/chrome-webstore-upload-keys).
 
+You also need your Chrome Web Store `publisherId` (your developer account identifier, not the extension ID). You can find it in the Chrome Web Store Developer Dashboard URL when logged in.
+
 ## Usage
 
 All methods return a  promise.
@@ -25,6 +27,7 @@ import chromeWebstoreUpload from 'chrome-webstore-upload';
 
 const store = chromeWebstoreUpload({
   extensionId: 'ecnglinljpjkbgmdpeiglonddahpbkeb',
+  publisherId: 'your-publisher-id',
   clientId: 'xxxxxxxxxx',
   clientSecret: 'xxxxxxxxxx',
   refreshToken: 'xxxxxxxxxx',
@@ -44,7 +47,7 @@ const token = 'xxxx'; // optional. One will be fetched if not provided
 const maxAwaitInProgressResponseSeconds = 60; // optional. If the API response is IN_PROGRESS, this method will wait until it becomes successful, or until the specified timeout
 const response = await store.uploadExisting(myZipFile, token, maxAwaitInProgressResponseSeconds);
 // response is a Resource Representation
-// https://developer.chrome.com/webstore/webstore_api/items#resource
+// https://developer.chrome.com/docs/webstore/api/reference/rest/v2/publishers.items/upload
 ```
 
 ```javascript
@@ -63,22 +66,32 @@ const response = await store.uploadExisting('./path/to/extension.crx', token, ma
 ### Publish extension
 
 ```javascript
-const target = 'default'; // optional. Can also be 'trustedTesters'
+const publishType = 'DEFAULT_PUBLISH'; // optional. Can also be 'TRUSTED_TESTERS' or 'STAGED_PUBLISH'
 const token = 'xxxx'; // optional. One will be fetched if not provided
-const deployPercentage = 25; // optional. Will default to 100%.
-const response = await store.publish(target, token, deployPercentage);
+const deployPercentage = 25; // optional. Sets the initial rollout percentage.
+const response = await store.publish(publishType, token, deployPercentage);
 // response is documented here:
-// https://developer.chrome.com/webstore/webstore_api/items#publish
+// https://developer.chrome.com/docs/webstore/api/reference/rest/v2/publishers.items/publish
 ```
 
-### Get a Chrome Web Store item
+### Set deployment rollout percentage
+
+Update the deployment percentage for an already-published extension without triggering a re-review:
 
 ```javascript
-const projection = "DRAFT"; // optional. Can also be 'PUBLISHED' but only "DRAFT" is supported at this time.
+const deployPercentage = 50; // required. Must be higher than the current value.
+const token = 'xxxx'; // optional. One will be fetched if not provided
+await store.setDeployPercentage(deployPercentage, token);
+// https://developer.chrome.com/docs/webstore/api/reference/rest/v2/publishers.items/setPublishedDeployPercentage
+```
+
+### Get Chrome Web Store item status
+
+```javascript
 const token = "xxxx"; // optional. One will be fetched if not provided
-const response = await store.get(projection, token);
+const response = await store.get(token);
 // response is documented here:
-// https://developer.chrome.com/docs/webstore/webstore_api/items#get
+// https://developer.chrome.com/docs/webstore/api/reference/rest/v2/publishers.items/fetchStatus
 ```
 
 ### Fetch token
