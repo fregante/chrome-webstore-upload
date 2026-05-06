@@ -7,19 +7,16 @@ export default async function zipStreamFromDirectory(directory: string): Promise
     const entries = await readdir(directory, { recursive: true, withFileTypes: true });
     const files = entries
         .filter(entry => entry.isFile() && isNotJunk(entry.name))
-        .map(entry => ({
-            absolute: join(entry.parentPath, entry.name),
-            relative: relative(directory, join(entry.parentPath, entry.name)),
-        }));
+        .map(entry => relative(directory, join(entry.parentPath, entry.name)));
 
-    if (!files.some(file => file.relative === 'manifest.json')) {
+    if (!files.includes('manifest.json')) {
         throw new Error(`manifest.json was not found in ${directory}`);
     }
 
     const zip = new yazl.ZipFile();
 
     for (const file of files) {
-        zip.addFile(file.absolute, file.relative);
+        zip.addFile(join(directory, file), file);
     }
 
     zip.end();
