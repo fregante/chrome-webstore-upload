@@ -1,0 +1,1 @@
+test fixture file inside a subdirectory
