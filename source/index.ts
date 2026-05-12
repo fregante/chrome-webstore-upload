@@ -155,7 +155,7 @@ class APIClient {
             body: JSON.stringify({ deployPercentage }),
         });
 
-        const response = await request.json() as unknown;
+        const response = await request.json() as Record<string, unknown>;
 
         throwIfNotOk(request, response);
     }

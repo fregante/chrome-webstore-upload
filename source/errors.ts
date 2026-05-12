@@ -45,11 +45,12 @@ function parseErrorMessage(response: unknown): string {
     return 'Unknown error';
 }
 
-export function throwIfNotOk(request: Response, response: unknown) {
+export function throwIfNotOk(request: Response, response: Record<string, unknown>) {
     if (!request.ok) {
         const message = parseErrorMessage(response);
         const error = new CWSError(message);
-        error.cause = response;
+        // https://github.com/fregante/chrome-webstore-upload/issues/117
+        error.cause = 'error' in response ? response['error'] : response;
         throw error;
     }
 }

@@ -41,7 +41,7 @@ test('Throws CWSError with cause on invalid grant error', async ({ client }) => 
         assert.fail('Should have thrown an error');
     } catch (error) {
         expect(error).toBeInstanceOf(CWSError);
-        expect(error.cause).toEqual(errorResponse);
+        expect(error.cause).toEqual(errorResponse.error);
     }
 });
 
@@ -115,7 +115,7 @@ test('Throws CWSError with detailed privacy policy message', async ({ client }) 
     } catch (error) {
         expect(error).toBeInstanceOf(CWSError);
         expect(error.message).toContain('privacy information');
-        expect(error.cause).toEqual(errorResponse);
+        expect(error.cause).toEqual(errorResponse.error);
     }
 });
 
@@ -168,7 +168,7 @@ test('Throws CWSError on multiple contact email and certification errors', async
         expect(error).toBeInstanceOf(CWSError);
         expect(error.message).toContain('contact email');
         expect(error.message).toContain('certify');
-        expect(error.cause).toEqual(errorResponse);
+        expect(error.cause).toEqual(errorResponse.error);
     }
 });
 
