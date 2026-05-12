@@ -175,7 +175,7 @@ test('Throws CWSError on multiple contact email and certification errors', async
 test('Does not throw on successful upload', async ({ client }) => {
     const successResponse = {
         itemId: 'foo',
-        uploadState: 'SUCCESS',
+        uploadState: 'SUCCEEDED',
     };
 
     fetchMock.postOnce('https://chromewebstore.googleapis.com/upload/v2/publishers/test-publisher/items/foo:upload', {

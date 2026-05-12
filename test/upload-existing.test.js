@@ -61,8 +61,8 @@ test('Uses provided extension ID and publisher ID', async ({ client }) => {
     await client.uploadExisting({}, 'token');
 });
 
-test('Upload retries if response returns UPLOAD_IN_PROGRESS', async ({ client }) => {
-    const bodyInProgress = { uploadState: 'UPLOAD_IN_PROGRESS' };
+test('Upload retries if response returns IN_PROGRESS', async ({ client }) => {
+    const bodyInProgress = { uploadState: 'IN_PROGRESS' };
 
     fetchMock.postOnce('https://chromewebstore.googleapis.com/upload/v2/publishers/test-publisher/items/foo:upload', {
         ...bodyInProgress,
@@ -70,26 +70,26 @@ test('Upload retries if response returns UPLOAD_IN_PROGRESS', async ({ client })
     stubTokenRequest();
 
     const getSpy = vi.spyOn(client, 'get')
-        .mockImplementationOnce(async () => ({ lastAsyncUploadState: 'UPLOAD_IN_PROGRESS' }))
-        .mockImplementationOnce(async () => ({ lastAsyncUploadState: 'SUCCESS' }));
+        .mockImplementationOnce(async () => ({ lastAsyncUploadState: 'IN_PROGRESS' }))
+        .mockImplementationOnce(async () => ({ lastAsyncUploadState: 'SUCCEEDED' }));
     const uploadPromise = client.uploadExisting({}, undefined, 6);
     await vi.advanceTimersByTimeAsync(2000); // Wait for the first retry
     expect(getSpy).toHaveBeenCalledTimes(1);
     await vi.advanceTimersByTimeAsync(4000); // Wait for the second retry
     const response = await uploadPromise;
-    assert.equal(response.uploadState, 'SUCCESS');
+    assert.equal(response.uploadState, 'SUCCEEDED');
     expect(getSpy).toHaveBeenCalledTimes(2);
 });
 
 test('Upload accepts directory path and zips it', async ({ client }) => {
     fetchMock.postOnce('https://chromewebstore.googleapis.com/upload/v2/publishers/test-publisher/items/foo:upload', {
-        uploadState: 'SUCCESS',
+        uploadState: 'SUCCEEDED',
     });
 
     stubTokenRequest();
 
     const response = await client.uploadExisting('./test/fixtures/valid-extension');
-    assert.equal(response.uploadState, 'SUCCESS');
+    assert.equal(response.uploadState, 'SUCCEEDED');
 });
 
 test('Upload rejects invalid directory path', async ({ client }) => {
@@ -100,18 +100,18 @@ test('Upload rejects invalid directory path', async ({ client }) => {
 
 test('Upload accepts .crx file path', async ({ client }) => {
     fetchMock.postOnce('https://chromewebstore.googleapis.com/upload/v2/publishers/test-publisher/items/foo:upload', {
-        uploadState: 'SUCCESS',
+        uploadState: 'SUCCEEDED',
     });
 
     stubTokenRequest();
 
     const response = await client.uploadExisting('./test/fixtures/test.crx');
-    assert.equal(response.uploadState, 'SUCCESS');
+    assert.equal(response.uploadState, 'SUCCEEDED');
 });
 
 test('Upload includes X-Goog-Upload-Protocol header', async ({ client }) => {
     fetchMock.postOnce('https://chromewebstore.googleapis.com/upload/v2/publishers/test-publisher/items/foo:upload', {
-        uploadState: 'SUCCESS',
+        uploadState: 'SUCCEEDED',
     });
 
     stubTokenRequest();
@@ -125,7 +125,7 @@ test('Upload includes X-Goog-Upload-Protocol header', async ({ client }) => {
 
 test('Upload includes X-Goog-Upload-File-Name header with file name from .crx file', async ({ client }) => {
     fetchMock.postOnce('https://chromewebstore.googleapis.com/upload/v2/publishers/test-publisher/items/foo:upload', {
-        uploadState: 'SUCCESS',
+        uploadState: 'SUCCEEDED',
     });
 
     stubTokenRequest();
@@ -139,7 +139,7 @@ test('Upload includes X-Goog-Upload-File-Name header with file name from .crx fi
 
 test('Upload includes X-Goog-Upload-File-Name header with extension.zip for directory', async ({ client }) => {
     fetchMock.postOnce('https://chromewebstore.googleapis.com/upload/v2/publishers/test-publisher/items/foo:upload', {
-        uploadState: 'SUCCESS',
+        uploadState: 'SUCCEEDED',
     });
 
     stubTokenRequest();
@@ -153,7 +153,7 @@ test('Upload includes X-Goog-Upload-File-Name header with extension.zip for dire
 
 test('Upload includes X-Goog-Upload-File-Name header with extension.zip for stream', async ({ client }) => {
     fetchMock.postOnce('https://chromewebstore.googleapis.com/upload/v2/publishers/test-publisher/items/foo:upload', {
-        uploadState: 'SUCCESS',
+        uploadState: 'SUCCEEDED',
     });
 
     stubTokenRequest();

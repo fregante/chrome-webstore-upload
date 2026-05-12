@@ -10,7 +10,7 @@ export type ItemResource = {
     crxVersion: string;
     itemId: string;
     name: string;
-    uploadState: string;
+    uploadState: 'UPLOAD_STATE_UNSPECIFIED' | 'SUCCEEDED' | 'IN_PROGRESS' | 'FAILED' | 'NOT_FOUND';
 };
 
 export type PublishType =
@@ -27,7 +27,7 @@ export type PublishResponse = {
 
 export type ItemStatusResponse = {
     itemId: string;
-    lastAsyncUploadState: string;
+    lastAsyncUploadState: 'UPLOAD_STATE_UNSPECIFIED' | 'SUCCEEDED' | 'IN_PROGRESS' | 'FAILED' | 'NOT_FOUND';
     name: string;
     publicKey: string;
     publishedItemRevisionStatus: unknown;

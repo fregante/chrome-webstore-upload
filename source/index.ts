@@ -205,7 +205,7 @@ class APIClient {
         response: ItemResource,
         maxAwaitInProgressResponseSeconds: number,
     ): Promise<ItemResource> {
-        if (response.uploadState !== 'UPLOAD_IN_PROGRESS' || maxAwaitInProgressResponseSeconds < retryIntervalSeconds) {
+        if (response.uploadState !== 'IN_PROGRESS' || maxAwaitInProgressResponseSeconds < retryIntervalSeconds) {
             return response;
         }
 
