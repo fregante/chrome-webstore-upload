@@ -75,13 +75,13 @@ test('Throws CWSError on publish condition not met', async ({ client }) => {
         },
     };
 
-    fetchMock.postOnce('https://www.googleapis.com/chromewebstore/v1.1/items/foo/publish?publishTarget=default', {
+    fetchMock.postOnce('https://chromewebstore.googleapis.com/v2/publishers/test-publisher/items/foo:publish', {
         status: 400,
         body: errorResponse,
     });
 
     try {
-        await client.publish('default', 'token');
+        await client.publish('DEFAULT_PUBLISH', 'token');
         assert.fail('Should have thrown an error');
     } catch (error) {
         expect(error).toBeInstanceOf(CWSError);
@@ -104,13 +104,13 @@ test('Throws CWSError with detailed privacy policy message', async ({ client }) 
         },
     };
 
-    fetchMock.postOnce('https://www.googleapis.com/chromewebstore/v1.1/items/foo/publish?publishTarget=default', {
+    fetchMock.postOnce('https://chromewebstore.googleapis.com/v2/publishers/test-publisher/items/foo:publish', {
         status: 400,
         body: errorResponse,
     });
 
     try {
-        await client.publish('default', 'token');
+        await client.publish('DEFAULT_PUBLISH', 'token');
         assert.fail('Should have thrown an error');
     } catch (error) {
         expect(error).toBeInstanceOf(CWSError);
@@ -119,21 +119,16 @@ test('Throws CWSError with detailed privacy policy message', async ({ client }) 
     }
 });
 
-test('Throws CWSError on upload failure with invalid version', async ({ client }) => {
+test('Throws CWSError on upload failure', async ({ client }) => {
     const errorResponse = {
-        kind: 'chromewebstore#item',
-        id: 'nphhdjlnhlicpjcpanamejkfehegdclg',
-        uploadState: 'FAILURE',
-        itemError: [
-            {
-                error_code: 'PKG_INVALID_VERSION_NUMBER',
-                error_detail: 'Invalid version number in manifest: 23.12.30.553. Please make sure the newly uploaded package has a larger version in file manifest.json than the published package: 23.12.30.554.',
-            },
-        ],
+        error: {
+            code: 400,
+            message: 'Invalid package: Manifest file is missing or unreadable.',
+        },
     };
 
-    fetchMock.putOnce('https://www.googleapis.com/upload/chromewebstore/v1.1/items/foo', {
-        status: 200,
+    fetchMock.postOnce('https://chromewebstore.googleapis.com/upload/v2/publishers/test-publisher/items/foo:upload', {
+        status: 400,
         body: errorResponse,
     });
 
@@ -142,35 +137,7 @@ test('Throws CWSError on upload failure with invalid version', async ({ client }
         assert.fail('Should have thrown an error');
     } catch (error) {
         expect(error).toBeInstanceOf(CWSError);
-        expect(error.message).toContain('Invalid version number');
-    }
-});
-
-test('Throws CWSError with cause on manifest parse error', async ({ client }) => {
-    const errorResponse = {
-        kind: 'chromewebstore#item',
-        id: 'bdeobgpddfaegbjfinhldnkfeieakdaf',
-        uploadState: 'FAILURE',
-        itemError: [
-            {
-                error_code: 'PKG_MANIFEST_PARSE_ERROR',
-                error_detail: 'The manifest has an invalid version: 0.0.0. Please format the version as defined \n      <a href="https://developer.chrome.com/extensions/manifest/version" target="_blank"> here</a>.',
-            },
-        ],
-    };
-
-    fetchMock.putOnce('https://www.googleapis.com/upload/chromewebstore/v1.1/items/foo', {
-        status: 200,
-        body: errorResponse,
-    });
-
-    try {
-        await client.uploadExisting({}, 'token');
-        assert.fail('Should have thrown an error');
-    } catch (error) {
-        expect(error).toBeInstanceOf(CWSError);
-        expect(error.message).toContain('invalid version');
-        expect(error.cause).toEqual(errorResponse);
+        expect(error.message).toContain('Invalid package');
     }
 });
 
@@ -189,13 +156,13 @@ test('Throws CWSError on multiple contact email and certification errors', async
         },
     };
 
-    fetchMock.postOnce('https://www.googleapis.com/chromewebstore/v1.1/items/foo/publish?publishTarget=default', {
+    fetchMock.postOnce('https://chromewebstore.googleapis.com/v2/publishers/test-publisher/items/foo:publish', {
         status: 400,
         body: errorResponse,
     });
 
     try {
-        await client.publish('default', 'token');
+        await client.publish('DEFAULT_PUBLISH', 'token');
         assert.fail('Should have thrown an error');
     } catch (error) {
         expect(error).toBeInstanceOf(CWSError);
@@ -207,13 +174,11 @@ test('Throws CWSError on multiple contact email and certification errors', async
 
 test('Does not throw on successful upload', async ({ client }) => {
     const successResponse = {
-        kind: 'chromewebstore#item',
-        id: 'foo',
-        uploadState: 'SUCCESS',
-        itemError: [],
+        itemId: 'foo',
+        uploadState: 'SUCCEEDED',
     };
 
-    fetchMock.putOnce('https://www.googleapis.com/upload/chromewebstore/v1.1/items/foo', {
+    fetchMock.postOnce('https://chromewebstore.googleapis.com/upload/v2/publishers/test-publisher/items/foo:upload', {
         status: 200,
         body: successResponse,
     });
@@ -224,17 +189,16 @@ test('Does not throw on successful upload', async ({ client }) => {
 
 test('Does not throw on successful publish', async ({ client }) => {
     const successResponse = {
-        kind: 'chromewebstore#item',
-        item_id: 'foo',
-        status: ['OK'],
-        statusDetail: ['OK.'],
+        itemId: 'foo',
+        name: 'publishers/test-publisher/items/foo',
+        state: 'PUBLISHED',
     };
 
-    fetchMock.postOnce('https://www.googleapis.com/chromewebstore/v1.1/items/foo/publish?publishTarget=default', {
+    fetchMock.postOnce('https://chromewebstore.googleapis.com/v2/publishers/test-publisher/items/foo:publish', {
         status: 200,
         body: successResponse,
     });
 
-    const result = await client.publish('default', 'token');
+    const result = await client.publish('DEFAULT_PUBLISH', 'token');
     expect(result).toEqual(successResponse);
 });

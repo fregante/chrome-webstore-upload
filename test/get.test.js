@@ -7,36 +7,36 @@ beforeEach(context => {
     context.client = getClient();
 });
 
-test('Get uses default projection when not provided', async ({ client }) => {
-    const mock = fetchMock.getOnce('begin:https://www.googleapis.com', {});
-    await client.get(undefined, 'token');
+test('Get uses fetchStatus endpoint', async ({ client }) => {
+    const mock = fetchMock.getOnce('begin:https://chromewebstore.googleapis.com', {});
+    await client.get('token');
 
     assert.equal(
         mock.lastUrl(),
-        'https://www.googleapis.com/chromewebstore/v1.1/items/foo?projection=DRAFT',
+        'https://chromewebstore.googleapis.com/v2/publishers/test-publisher/items/foo:fetchStatus',
     );
 });
 
 test('Get does not fetch token when provided', async ({ client }) => {
-    fetchMock.getOnce('begin:https://www.googleapis.com/chromewebstore/v1.1/items/', {});
-    await client.get(undefined, 'token');
+    fetchMock.getOnce('begin:https://chromewebstore.googleapis.com', {});
+    await client.get('token');
 });
 
 test('Get uses token for auth', async ({ client }) => {
     const token = 'token';
 
     fetchMock.getOnce({
-        url: 'begin:https://www.googleapis.com/',
+        url: 'begin:https://chromewebstore.googleapis.com/',
         headers: { Authorization: `Bearer ${token}` },
     }, {});
 
-    await client.get(undefined, token);
+    await client.get(token);
 });
 
-test('Get uses provided extension ID', async ({ client }) => {
-    const { extensionId } = client;
+test('Get uses provided extension ID and publisher ID', async ({ client }) => {
+    const { extensionId, publisherId } = client;
 
-    fetchMock.getOnce(`path:/chromewebstore/v1.1/items/${extensionId}`, {});
+    fetchMock.getOnce(`https://chromewebstore.googleapis.com/v2/publishers/${publisherId}/items/${extensionId}:fetchStatus`, {});
 
-    await client.get(undefined, 'token');
+    await client.get('token');
 });

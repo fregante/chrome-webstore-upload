@@ -4,31 +4,30 @@
 
 import fs, { type ReadStream } from 'node:fs';
 import { throwIfNotOk } from './errors.js';
-import type { APIClientOptions, ItemResource, PublishResponse } from './types.js';
+import type {
+    APIClientOptions, ItemResource, ItemStatusResponse, PublishResponse, PublishType,
+} from './types.js';
 import zipStreamFromDirectory from './zip-dir.js';
 
-const rootURI = 'https://www.googleapis.com';
+const rootURI = 'https://chromewebstore.googleapis.com';
 export const refreshTokenURI = 'https://www.googleapis.com/oauth2/v4/token';
-const uploadExistingURI = (id: string) =>
-    `${rootURI}/upload/chromewebstore/v1.1/items/${id}`;
 
-const publishURI = ({ extensionId, target = 'default', deployPercentage }: {
-    extensionId: string;
-    target: string;
-    deployPercentage?: number;
-}): string => {
-    const url = new URL(`${rootURI}/chromewebstore/v1.1/items/${extensionId}/publish`);
-    url.searchParams.set('publishTarget', target);
-    if (deployPercentage !== undefined) {
-        url.searchParams.set('deployPercentage', String(deployPercentage));
-    }
+const itemName = (publisherId: string, extensionId: string) =>
+    `publishers/${publisherId}/items/${extensionId}`;
 
-    return url.href;
-};
+const uploadExistingURI = (publisherId: string, extensionId: string) =>
+    `${rootURI}/upload/v2/${itemName(publisherId, extensionId)}:upload`;
 
-const getURI = (id: string, projection: string) => `${rootURI}/chromewebstore/v1.1/items/${id}?projection=${projection}`;
+const publishURI = (publisherId: string, extensionId: string) =>
+    `${rootURI}/v2/${itemName(publisherId, extensionId)}:publish`;
 
-const requiredFields = ['extensionId', 'clientId', 'refreshToken'] as const;
+const fetchStatusURI = (publisherId: string, extensionId: string) =>
+    `${rootURI}/v2/${itemName(publisherId, extensionId)}:fetchStatus`;
+
+const setDeployPercentageURI = (publisherId: string, extensionId: string) =>
+    `${rootURI}/v2/${itemName(publisherId, extensionId)}:setPublishedDeployPercentage`;
+
+const requiredFields = ['extensionId', 'publisherId', 'clientId', 'refreshToken'] as const;
 
 const retryIntervalSeconds = 2;
 
@@ -39,11 +38,14 @@ async function getStreamFromPath(filepath: string): Promise<ReadStream | NodeJS.
         : zipStreamFromDirectory(filepath);
 }
 
-export type { APIClientOptions, ItemResource, PublishResponse } from './types.js';
+export type {
+    APIClientOptions, ItemResource, ItemStatusResponse, PublishResponse, PublishType,
+} from './types.js';
 export { CWSError } from './errors.js';
 
 class APIClient {
     extensionId: string;
+    publisherId: string;
     clientId: string;
     refreshToken: string;
     clientSecret: string | undefined;
@@ -64,6 +66,7 @@ class APIClient {
         }
 
         this.extensionId = options.extensionId;
+        this.publisherId = options.publisherId;
         this.clientId = options.clientId;
         this.refreshToken = options.refreshToken;
         this.clientSecret = options.clientSecret;
@@ -84,10 +87,10 @@ class APIClient {
             ? await getStreamFromPath(streamOrPath)
             : streamOrPath;
 
-        const { extensionId } = this;
+        const { extensionId, publisherId } = this;
 
-        const request = await fetch(uploadExistingURI(extensionId), {
-            method: 'PUT',
+        const request = await fetch(uploadExistingURI(publisherId, extensionId), {
+            method: 'POST',
             headers: this._uploadHeaders(await token, fileName),
             // @ts-expect-error Node extension? 🤷‍♂️ Required https://github.com/nodejs/node/issues/46221
             duplex: 'half',
@@ -104,15 +107,30 @@ class APIClient {
     }
 
     async publish(
-        target = 'default',
+        publishType: PublishType | 'default' | 'trustedTesters' = 'DEFAULT_PUBLISH',
         token: string | Promise<string> = this.fetchToken(),
         deployPercentage: number | undefined = undefined,
     ): Promise<PublishResponse> {
-        const { extensionId } = this;
+        const { extensionId, publisherId } = this;
 
-        const request = await fetch(publishURI({ extensionId, target, deployPercentage }), {
+        const body: {
+            publishType: PublishType;
+            deployInfos?: Array<{ deployPercentage: number }>;
+        } = {
+            publishType: this._normalizePublishType(publishType),
+        };
+
+        if (deployPercentage !== undefined) {
+            body.deployInfos = [{ deployPercentage }];
+        }
+
+        const request = await fetch(publishURI(publisherId, extensionId), {
             method: 'POST',
-            headers: this._headers(await token),
+            headers: {
+                ...this._headers(await token),
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(body),
         });
 
         const response = await request.json() as PublishResponse;
@@ -122,15 +140,35 @@ class APIClient {
         return response;
     }
 
-    async get(projection = 'DRAFT', token: string | Promise<string> = this.fetchToken()): Promise<ItemResource> {
-        const { extensionId } = this;
+    async setDeployPercentage(
+        deployPercentage: number,
+        token: string | Promise<string> = this.fetchToken(),
+    ): Promise<void> {
+        const { extensionId, publisherId } = this;
 
-        const request = await fetch(getURI(extensionId, projection), {
+        const request = await fetch(setDeployPercentageURI(publisherId, extensionId), {
+            method: 'POST',
+            headers: {
+                ...this._headers(await token),
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ deployPercentage }),
+        });
+
+        const response = await request.json() as unknown;
+
+        throwIfNotOk(request, response);
+    }
+
+    async get(token: string | Promise<string> = this.fetchToken()): Promise<ItemStatusResponse> {
+        const { extensionId, publisherId } = this;
+
+        const request = await fetch(fetchStatusURI(publisherId, extensionId), {
             method: 'GET',
             headers: this._headers(await token),
         });
 
-        const response = await request.json() as ItemResource;
+        const response = await request.json() as ItemStatusResponse;
 
         throwIfNotOk(request, response);
 
@@ -177,19 +215,36 @@ class APIClient {
         });
 
         // Retry fetching the item resource
-        return this._waitUploadSuccess(await this.get('DRAFT'), maxAwaitInProgressResponseSeconds - retryIntervalSeconds);
+        const statusResponse = await this.get();
+        const retryResponse: ItemResource = {
+            crxVersion: response.crxVersion,
+            itemId: response.itemId,
+            name: response.name,
+            uploadState: statusResponse.lastAsyncUploadState,
+        };
+        return this._waitUploadSuccess(retryResponse, maxAwaitInProgressResponseSeconds - retryIntervalSeconds);
     }
 
-    _headers(token: string): { Authorization: string; 'x-goog-api-version': string } {
+    _normalizePublishType(target: PublishType | 'default' | 'trustedTesters'): PublishType {
+        if (target === 'default') {
+            return 'DEFAULT_PUBLISH';
+        }
+
+        if (target === 'trustedTesters') {
+            return 'TRUSTED_TESTERS';
+        }
+
+        return target;
+    }
+
+    _headers(token: string): { Authorization: string } {
         return {
             Authorization: `Bearer ${token}`,
-            'x-goog-api-version': '2',
         };
     }
 
     _uploadHeaders(token: string, fileName: string): {
         Authorization: string;
-        'x-goog-api-version': string;
         'X-Goog-Upload-Protocol': string;
         'X-Goog-Upload-File-Name': string;
     } {

@@ -7,30 +7,71 @@ beforeEach(context => {
     context.client = getClient();
 });
 
-test('Publish uses default target when not provided', async ({ client }) => {
-    fetchMock.postOnce('https://www.googleapis.com/chromewebstore/v1.1/items/foo/publish?publishTarget=default', {});
+test('Publish uses default publishType when not provided', async ({ client }) => {
+    fetchMock.postOnce((url, options) =>
+        url === 'https://chromewebstore.googleapis.com/v2/publishers/test-publisher/items/foo:publish'
+        && JSON.parse(options.body).publishType === 'DEFAULT_PUBLISH', {});
 
     await client.publish(undefined, 'token');
 });
 
-test('Publish uses target when provided', async ({ client }) => {
-    const target = 'trustedTesters';
+test('Publish uses DEFAULT_PUBLISH publishType', async ({ client }) => {
+    fetchMock.postOnce((url, options) =>
+        url === 'https://chromewebstore.googleapis.com/v2/publishers/test-publisher/items/foo:publish'
+        && JSON.parse(options.body).publishType === 'DEFAULT_PUBLISH', {});
 
-    fetchMock.postOnce(`https://www.googleapis.com/chromewebstore/v1.1/items/foo/publish?publishTarget=${target}`, {});
-
-    await client.publish(target, 'token');
+    await client.publish('DEFAULT_PUBLISH', 'token');
 });
 
-test('Publish uses deployPercentage when provided', async ({ client }) => {
-    const deployPercentage = 100;
+test('Publish uses TRUSTED_TESTERS publishType', async ({ client }) => {
+    fetchMock.postOnce((url, options) =>
+        url === 'https://chromewebstore.googleapis.com/v2/publishers/test-publisher/items/foo:publish'
+        && JSON.parse(options.body).publishType === 'TRUSTED_TESTERS', {});
 
-    fetchMock.postOnce(`https://www.googleapis.com/chromewebstore/v1.1/items/foo/publish?publishTarget=default&deployPercentage=${deployPercentage}`, {});
+    await client.publish('TRUSTED_TESTERS', 'token');
+});
 
-    await client.publish('default', 'token', deployPercentage);
+test('Publish maps legacy "default" target to DEFAULT_PUBLISH', async ({ client }) => {
+    fetchMock.postOnce((url, options) =>
+        url === 'https://chromewebstore.googleapis.com/v2/publishers/test-publisher/items/foo:publish'
+        && JSON.parse(options.body).publishType === 'DEFAULT_PUBLISH', {});
+
+    await client.publish('default', 'token');
+});
+
+test('Publish maps legacy "trustedTesters" target to TRUSTED_TESTERS', async ({ client }) => {
+    fetchMock.postOnce((url, options) =>
+        url === 'https://chromewebstore.googleapis.com/v2/publishers/test-publisher/items/foo:publish'
+        && JSON.parse(options.body).publishType === 'TRUSTED_TESTERS', {});
+
+    await client.publish('trustedTesters', 'token');
+});
+
+test('Publish sends deployInfos when deployPercentage is provided', async ({ client }) => {
+    const deployPercentage = 25;
+
+    fetchMock.postOnce((url, options) => {
+        const body = JSON.parse(options.body);
+        return url === 'https://chromewebstore.googleapis.com/v2/publishers/test-publisher/items/foo:publish'
+            && Array.isArray(body.deployInfos)
+            && body.deployInfos[0].deployPercentage === deployPercentage;
+    }, {});
+
+    await client.publish('DEFAULT_PUBLISH', 'token', deployPercentage);
+});
+
+test('Publish does not send deployInfos when deployPercentage is not provided', async ({ client }) => {
+    fetchMock.postOnce((url, options) => {
+        const body = JSON.parse(options.body);
+        return url === 'https://chromewebstore.googleapis.com/v2/publishers/test-publisher/items/foo:publish'
+            && body.deployInfos === undefined;
+    }, {});
+
+    await client.publish(undefined, 'token');
 });
 
 test('Publish does not fetch token when provided', async ({ client }) => {
-    fetchMock.postOnce('https://www.googleapis.com/chromewebstore/v1.1/items/foo/publish?publishTarget=default', {});
+    fetchMock.postOnce('https://chromewebstore.googleapis.com/v2/publishers/test-publisher/items/foo:publish', {});
 
     await client.publish(undefined, 'token');
 });
@@ -39,7 +80,7 @@ test('Publish uses token for auth', async ({ client }) => {
     const token = 'token';
 
     fetchMock.postOnce({
-        url: 'https://www.googleapis.com/chromewebstore/v1.1/items/foo/publish?publishTarget=default',
+        url: 'https://chromewebstore.googleapis.com/v2/publishers/test-publisher/items/foo:publish',
         headers: {
             Authorization: `Bearer ${token}`,
         },
@@ -48,18 +89,21 @@ test('Publish uses token for auth', async ({ client }) => {
     await client.publish(undefined, token);
 });
 
-test('Uses provided extension ID', async ({ client }) => {
-    const { extensionId } = client;
+test('Publish uses provided extension ID and publisher ID', async ({ client }) => {
+    const { extensionId, publisherId } = client;
 
-    // Sandbox.stub(got, 'post').callsFake(uri => {
-    //     t.true(uri.includes(`/items/${extensionId}`));
+    fetchMock.postOnce(`https://chromewebstore.googleapis.com/v2/publishers/${publisherId}/items/${extensionId}:publish`, {});
 
-    //     return {
-    //         json: sandbox.stub().resolves({}),
-    //     };
-    // });
+    await client.publish(undefined, 'token');
+});
 
-    fetchMock.postOnce(`https://www.googleapis.com/chromewebstore/v1.1/items/${extensionId}/publish?publishTarget=default`, {});
+test('Publish sends Content-Type application/json header', async ({ client }) => {
+    fetchMock.postOnce({
+        url: 'https://chromewebstore.googleapis.com/v2/publishers/test-publisher/items/foo:publish',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    }, {});
 
     await client.publish(undefined, 'token');
 });
