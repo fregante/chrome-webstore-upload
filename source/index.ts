@@ -107,7 +107,7 @@ class APIClient {
     }
 
     async publish(
-        publishType: PublishType | 'default' | 'trustedTesters' = 'DEFAULT_PUBLISH',
+        publishType: PublishType | 'default' = 'DEFAULT_PUBLISH',
         token: string | Promise<string> = this.fetchToken(),
         deployPercentage: number | undefined = undefined,
     ): Promise<PublishResponse> {
@@ -225,13 +225,9 @@ class APIClient {
         return this._waitUploadSuccess(retryResponse, maxAwaitInProgressResponseSeconds - retryIntervalSeconds);
     }
 
-    _normalizePublishType(target: PublishType | 'default' | 'trustedTesters'): PublishType {
+    _normalizePublishType(target: PublishType | 'default'): PublishType {
         if (target === 'default') {
             return 'DEFAULT_PUBLISH';
-        }
-
-        if (target === 'trustedTesters') {
-            return 'TRUSTED_TESTERS';
         }
 
         return target;

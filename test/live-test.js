@@ -15,5 +15,5 @@ const store = chromeWebstoreUpload({
 const token = await store.fetchToken();
 const upload = await store.uploadExisting(myZipFile, token);
 console.log({ upload });
-const publish = await store.publish('TRUSTED_TESTERS', token);
+const publish = await store.publish('DEFAULT_PUBLISH', token);
 console.log({ publish });
