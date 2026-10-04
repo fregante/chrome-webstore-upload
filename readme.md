@@ -15,10 +15,6 @@ Need Google API keys? Follow [the guide](https://github.com/fregante/chrome-webs
 npm install --save-dev chrome-webstore-upload
 ```
 
-## Requirements
-
-- 
-
 ## Setup
 
 You will need a Chrome Web Store developer account with an existing extension (the first version must be [created manually](https://developer.chrome.com/docs/webstore/publish) in the dashboard) and these values:
@@ -70,25 +66,23 @@ const store = chromeWebstoreUpload({
 });
 ```
 
-| Option         | Type     | Required | Description                                    |
-| -------------- | -------- | -------- | ---------------------------------------------- |
-| `extensionId`  | `string` | yes      | ID of the extension to manage                  |
-| `publisherId`  | `string` | yes      | Your Chrome Web Store publisher ID             |
-| `clientId`     | `string` | yes      | Google OAuth client ID                         |
-| `clientSecret` | `string` | no\*     | Google OAuth client secret                     |
-| `refreshToken` | `string` | yes      | OAuth refresh token                            |
-
-\* Not needed for tokens generated for a "Chrome App" OAuth client.
+| Option         | Type     | Description                                                                                  |
+| -------------- | -------- | -------------------------------------------------------------------------------------------- |
+| `extensionId`  | `string` | ID of the extension to manage                                                                |
+| `publisherId`  | `string` | Your Chrome Web Store publisher ID                                                           |
+| `clientId`     | `string` | Google OAuth client ID                                                                       |
+| `clientSecret` | `string` | Google OAuth client secret. Not needed for tokens generated for a "Chrome App" OAuth client  |
+| `refreshToken` | `string` | OAuth refresh token                                                                          |
 
 ### `store.uploadExisting(source, token?, maxAwaitInProgressSeconds?)`
 
 Uploads a new version of an existing extension.
 
-| Parameter                   | Type                     | Description                                                                                                      |
-| --------------------------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------- |
-| `source`                    | `ReadStream` \| `string` | A zip stream, or a path to a `.zip`, `.crx` or directory. Directories are zipped automatically and must contain a `manifest.json`. `.crx` is only supported as a path, not as a stream |
-| `token`                     | `string`                 | Optional access token. One is fetched if omitted                                                                 |
-| `maxAwaitInProgressSeconds` | `number`                 | Optional. If the API responds with `IN_PROGRESS`, wait up to this many seconds for the upload to finish         |
+| Parameter                   | Type                                           | Default           | Description                                                                                                      |
+| --------------------------- | ---------------------------------------------- | ----------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `source`                    | `ReadStream` \| `ReadableStream` \| `string`   | —                 | A zip stream, or a path to a `.zip`, `.crx` or directory. Directories are zipped automatically and must contain a `manifest.json`. `.crx` is only supported as a path, not as a stream |
+| `token`                     | `string` \| `Promise<string>`                  | fetched on demand | Access token                                                                                                     |
+| `maxAwaitInProgressSeconds` | `number`                                       | `0`               | If the API responds with `IN_PROGRESS`, poll every 2 seconds for up to this many seconds. Values below `2` disable polling |
 
 Returns the [upload response](https://developer.chrome.com/docs/webstore/api/reference/rest/v2/publishers.items/upload).
 
@@ -113,11 +107,11 @@ await store.uploadExisting('./dist', undefined, 60);
 
 Submits the uploaded version for review and publishing.
 
-| Parameter          | Type                                   | Default             | Description                                       |
-| ------------------ | -------------------------------------- | ------------------- | ------------------------------------------------- |
+| Parameter          | Type                                      | Default             | Description                                       |
+| ------------------ | ----------------------------------------- | ------------------- | ------------------------------------------------- |
 | `publishType`      | `'DEFAULT_PUBLISH'` \| `'STAGED_PUBLISH'` | `'DEFAULT_PUBLISH'` | When the item is published                        |
-| `token`            | `string`                               | fetched on demand   | Access token                                      |
-| `deployPercentage` | `number`                               | —                   | Initial rollout percentage                        |
+| `token`            | `string` \| `Promise<string>`             | fetched on demand   | Access token                                      |
+| `deployPercentage` | `number`                                  | —                   | Initial rollout percentage                        |
 
 Returns the [publish response](https://developer.chrome.com/docs/webstore/api/reference/rest/v2/publishers.items/publish).
 
@@ -128,7 +122,7 @@ await store.publish('STAGED_PUBLISH', undefined, 10);
 
 ### `store.setDeployPercentage(percentage, token?)`
 
-Updates the rollout percentage of an already published extension, without triggering a new review. The value must be higher than the current one.
+Updates the rollout percentage of an already published extension, without triggering a new review. The value must be higher than the current one. Resolves with nothing.
 
 ```ts
 await store.setDeployPercentage(50);
@@ -185,14 +179,21 @@ for (const percentage of [25, 50, 100]) {
 
 ## Error handling
 
-Methods reject when the API returns an error or when the upload fails.
+Methods reject when the API returns an error or when the upload fails. API errors are thrown as `CWSError`.
 
 ```ts
+import chromeWebstoreUpload, {CWSError} from 'chrome-webstore-upload';
+
 try {
 	await store.uploadExisting('./dist', undefined, 120);
 	await store.publish();
 } catch (error) {
-	console.error('Release failed:', error);
+	if (error instanceof CWSError) {
+		console.error('Chrome Web Store API error:', error);
+	} else {
+		console.error('Release failed:', error);
+	}
+
 	process.exitCode = 1;
 }
 ```
