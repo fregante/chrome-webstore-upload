@@ -16,7 +16,6 @@ export type ItemResource = {
 export type PublishType =
     | 'PUBLISH_TYPE_UNSPECIFIED'
     | 'DEFAULT_PUBLISH'
-    | 'TRUSTED_TESTERS'
     | 'STAGED_PUBLISH';
 
 export type PublishResponse = {

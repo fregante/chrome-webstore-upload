@@ -66,7 +66,7 @@ const response = await store.uploadExisting('./path/to/extension.crx', token, ma
 ### Publish extension
 
 ```javascript
-const publishType = 'DEFAULT_PUBLISH'; // optional. Can also be 'TRUSTED_TESTERS' or 'STAGED_PUBLISH'
+const publishType = 'DEFAULT_PUBLISH'; // optional. Can also be 'STAGED_PUBLISH'
 const token = 'xxxx'; // optional. One will be fetched if not provided
 const deployPercentage = 25; // optional. Sets the initial rollout percentage.
 const response = await store.publish(publishType, token, deployPercentage);

@@ -23,12 +23,12 @@ test('Publish uses DEFAULT_PUBLISH publishType', async ({ client }) => {
     await client.publish('DEFAULT_PUBLISH', 'token');
 });
 
-test('Publish uses TRUSTED_TESTERS publishType', async ({ client }) => {
+test('Publish uses STAGED_PUBLISH publishType', async ({ client }) => {
     fetchMock.postOnce((url, options) =>
         url === 'https://chromewebstore.googleapis.com/v2/publishers/test-publisher/items/foo:publish'
-        && JSON.parse(options.body).publishType === 'TRUSTED_TESTERS', {});
+        && JSON.parse(options.body).publishType === 'STAGED_PUBLISH', {});
 
-    await client.publish('TRUSTED_TESTERS', 'token');
+    await client.publish('STAGED_PUBLISH', 'token');
 });
 
 test('Publish maps legacy "default" target to DEFAULT_PUBLISH', async ({ client }) => {
@@ -37,14 +37,6 @@ test('Publish maps legacy "default" target to DEFAULT_PUBLISH', async ({ client 
         && JSON.parse(options.body).publishType === 'DEFAULT_PUBLISH', {});
 
     await client.publish('default', 'token');
-});
-
-test('Publish maps legacy "trustedTesters" target to TRUSTED_TESTERS', async ({ client }) => {
-    fetchMock.postOnce((url, options) =>
-        url === 'https://chromewebstore.googleapis.com/v2/publishers/test-publisher/items/foo:publish'
-        && JSON.parse(options.body).publishType === 'TRUSTED_TESTERS', {});
-
-    await client.publish('trustedTesters', 'token');
 });
 
 test('Publish sends deployInfos when deployPercentage is provided', async ({ client }) => {
