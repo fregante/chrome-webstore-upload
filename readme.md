@@ -1,113 +1,208 @@
 # chrome-webstore-upload
 
-> A small node.js module to upload/publish extensions to the [Chrome Web Store](https://chrome.google.com/webstore/category/extensions).
+> Upload and publish extensions to the [Chrome Web Store](https://chromewebstore.google.com/category/extensions) from Node.js, using the [Chrome Web Store API v2](https://developer.chrome.com/docs/webstore/api).
 
-If you're looking to upload/publish from the CLI, then use [chrome-webstore-upload-cli](https://github.com/fregante/chrome-webstore-upload-cli).
+[![npm version](https://img.shields.io/npm/v/chrome-webstore-upload)](https://www.npmjs.com/package/chrome-webstore-upload)
+[![npm downloads](https://img.shields.io/npm/dm/chrome-webstore-upload)](https://www.npmjs.com/package/chrome-webstore-upload)
+
+Looking for a command line tool? Use [chrome-webstore-upload-cli](https://github.com/fregante/chrome-webstore-upload-cli).
+
+Need Google API keys? Follow [the guide](https://github.com/fregante/chrome-webstore-upload-keys).
 
 ## Install
 
-```
+```sh
 npm install --save-dev chrome-webstore-upload
 ```
 
 ## Setup
 
-You will need a Google API `clientId`, `clientSecret` and `refreshToken`. Use [the guide]( https://github.com/fregante/chrome-webstore-upload-keys).
+You will need a Chrome Web Store developer account with an existing extension (the first version must be [created manually](https://developer.chrome.com/docs/webstore/publish) in the dashboard) and these values:
 
-You also need your Chrome Web Store `publisherId` (your developer account identifier, not the extension ID). You can find it in the Chrome Web Store Developer Dashboard URL when logged in.
+| Value          | Where to get it                                                                                                              |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `extensionId`  | The 32-character ID of your extension (visible in its Chrome Web Store URL and in the Developer Dashboard)                   |
+| `publisherId`  | Your developer account identifier, **not** the extension ID. Found in the Developer Dashboard URL and on its Settings page   |
+| `clientId`     | Google OAuth credentials, see [the guide](https://github.com/fregante/chrome-webstore-upload-keys)                           |
+| `clientSecret` | Same as above. Optional if the token was created for a "Chrome App" OAuth client                                             |
+| `refreshToken` | Same as above                                                                                                                |
 
-## Usage
+Never commit these values. Load them from environment variables or your CI secret store.
 
-All methods return a  promise.
+## Quick start
 
-### Create a new client
-
-```javascript
+```ts
 import chromeWebstoreUpload from 'chrome-webstore-upload';
 
 const store = chromeWebstoreUpload({
-  extensionId: 'ecnglinljpjkbgmdpeiglonddahpbkeb',
-  publisherId: 'your-publisher-id',
-  clientId: 'xxxxxxxxxx',
-  clientSecret: 'xxxxxxxxxx',
-  refreshToken: 'xxxxxxxxxx',
+	extensionId: process.env.EXTENSION_ID!,
+	publisherId: process.env.PUBLISHER_ID!,
+	clientId: process.env.CLIENT_ID!,
+	clientSecret: process.env.CLIENT_SECRET!,
+	refreshToken: process.env.REFRESH_TOKEN!,
+});
+
+const token = await store.fetchToken();
+
+await store.uploadExisting('./dist', token);
+await store.publish('DEFAULT_PUBLISH', token);
+```
+
+All methods return a promise.
+
+## API
+
+### `chromeWebstoreUpload(options)`
+
+Creates a client bound to a single extension.
+
+```ts
+const store = chromeWebstoreUpload({
+	extensionId: 'ecnglinljpjkbgmdpeiglonddahpbkeb',
+	publisherId: 'your-publisher-id',
+	clientId: 'xxxxxxxxxx',
+	clientSecret: 'xxxxxxxxxx',
+	refreshToken: 'xxxxxxxxxx',
 });
 ```
 
-### Upload to existing extension
+| Option         | Type     | Description                                                                                  |
+| -------------- | -------- | -------------------------------------------------------------------------------------------- |
+| `extensionId`  | `string` | ID of the extension to manage                                                                |
+| `publisherId`  | `string` | Your Chrome Web Store publisher ID                                                           |
+| `clientId`     | `string` | Google OAuth client ID                                                                       |
+| `clientSecret` | `string` | Google OAuth client secret. Not needed for tokens generated for a "Chrome App" OAuth client  |
+| `refreshToken` | `string` | OAuth refresh token                                                                          |
 
-You can upload a zip file, crx file, or a directory. If you provide a directory, it will be automatically zipped. Crx files are only supported as path, not as stream.
+### `store.uploadExisting(source, token?, maxAwaitInProgressSeconds?)`
 
-```javascript
-import fs from 'fs';
+Uploads a new version of an existing extension.
 
-// Upload a zip file
-const myZipFile = fs.createReadStream('./mypackage.zip');
-const token = 'xxxx'; // optional. One will be fetched if not provided
-const maxAwaitInProgressResponseSeconds = 60; // optional. If the API response is IN_PROGRESS, this method will wait until it becomes successful, or until the specified timeout
-const response = await store.uploadExisting(myZipFile, token, maxAwaitInProgressResponseSeconds);
-// response is a Resource Representation
-// https://developer.chrome.com/docs/webstore/api/reference/rest/v2/publishers.items/upload
+| Parameter                   | Type                                           | Default           | Description                                                                                                      |
+| --------------------------- | ---------------------------------------------- | ----------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `source`                    | `ReadStream` \| `ReadableStream` \| `string`   | —                 | A zip stream, or a path to a `.zip`, `.crx` or directory. Directories are zipped automatically and must contain a `manifest.json`. `.crx` is only supported as a path, not as a stream |
+| `token`                     | `string` \| `Promise<string>`                  | fetched on demand | Access token                                                                                                     |
+| `maxAwaitInProgressSeconds` | `number`                                       | `0`               | If the API responds with `IN_PROGRESS`, poll every 2 seconds for up to this many seconds. Values below `2` disable polling |
+
+Returns the [upload response](https://developer.chrome.com/docs/webstore/api/reference/rest/v2/publishers.items/upload).
+
+```ts
+import {createReadStream} from 'node:fs';
+
+// Zip stream
+await store.uploadExisting(createReadStream('./mypackage.zip'));
+
+// Zip or crx path
+await store.uploadExisting('./path/to/extension.zip');
+await store.uploadExisting('./path/to/extension.crx');
+
+// Directory (zipped for you)
+await store.uploadExisting('./path/to/extension-directory');
+
+// Wait up to 60 seconds for processing to complete
+await store.uploadExisting('./dist', undefined, 60);
 ```
 
-```javascript
-// Upload a directory (it will be zipped automatically)
-const response = await store.uploadExisting('./path/to/extension-directory', token, maxAwaitInProgressResponseSeconds);
-// The directory must contain a manifest.json file
+### `store.publish(publishType?, token?, deployPercentage?)`
+
+Submits the uploaded version for review and publishing.
+
+| Parameter          | Type                                      | Default             | Description                                       |
+| ------------------ | ----------------------------------------- | ------------------- | ------------------------------------------------- |
+| `publishType`      | `'DEFAULT_PUBLISH'` \| `'STAGED_PUBLISH'` | `'DEFAULT_PUBLISH'` | When the item is published                        |
+| `token`            | `string` \| `Promise<string>`             | fetched on demand   | Access token                                      |
+| `deployPercentage` | `number`                                  | —                   | Initial rollout percentage                        |
+
+Returns the [publish response](https://developer.chrome.com/docs/webstore/api/reference/rest/v2/publishers.items/publish).
+
+```ts
+await store.publish('DEFAULT_PUBLISH');
+await store.publish('STAGED_PUBLISH', undefined, 10);
 ```
 
-```javascript
-// Upload a .zip or .crx file by path
-const response = await store.uploadExisting('./path/to/extension.zip', token, maxAwaitInProgressResponseSeconds);
-// or
-const response = await store.uploadExisting('./path/to/extension.crx', token, maxAwaitInProgressResponseSeconds);
+### `store.setDeployPercentage(percentage, token?)`
+
+Updates the rollout percentage of an already published extension, without triggering a new review. The value must be higher than the current one. Resolves with nothing.
+
+```ts
+await store.setDeployPercentage(50);
 ```
 
-### Publish extension
+See the [API reference](https://developer.chrome.com/docs/webstore/api/reference/rest/v2/publishers.items/setPublishedDeployPercentage).
 
-```javascript
-const publishType = 'DEFAULT_PUBLISH'; // optional. Can also be 'STAGED_PUBLISH'
-const token = 'xxxx'; // optional. One will be fetched if not provided
-const deployPercentage = 25; // optional. Sets the initial rollout percentage.
-const response = await store.publish(publishType, token, deployPercentage);
-// response is documented here:
-// https://developer.chrome.com/docs/webstore/api/reference/rest/v2/publishers.items/publish
+### `store.get(token?)`
+
+Fetches the current [item status](https://developer.chrome.com/docs/webstore/api/reference/rest/v2/publishers.items/fetchStatus).
+
+```ts
+const status = await store.get();
+console.log(status);
 ```
 
-### Set deployment rollout percentage
+### `store.fetchToken()`
 
-Update the deployment percentage for an already-published extension without triggering a re-review:
+Exchanges the refresh token for an access token.
 
-```javascript
-const deployPercentage = 50; // required. Must be higher than the current value.
-const token = 'xxxx'; // optional. One will be fetched if not provided
-await store.setDeployPercentage(deployPercentage, token);
-// https://developer.chrome.com/docs/webstore/api/reference/rest/v2/publishers.items/setPublishedDeployPercentage
+```ts
+const token = await store.fetchToken();
 ```
 
-### Get Chrome Web Store item status
+Fetch it once and pass it to every other method to avoid redundant token requests.
 
-```javascript
-const token = "xxxx"; // optional. One will be fetched if not provided
-const response = await store.get(token);
-// response is documented here:
-// https://developer.chrome.com/docs/webstore/api/reference/rest/v2/publishers.items/fetchStatus
+## Recipes
+
+### Upload and publish
+
+```ts
+const token = await store.fetchToken();
+
+const upload = await store.uploadExisting('./dist', token, 120);
+console.log(upload);
+
+const publish = await store.publish('DEFAULT_PUBLISH', token);
+console.log(publish);
 ```
 
-### Fetch token
+### Staged rollout
 
-```javascript
-const token = store.fetchToken();
-// token is  astring
+```ts
+const token = await store.fetchToken();
+
+await store.uploadExisting('./dist', token, 120);
+await store.publish('STAGED_PUBLISH', token, 5);
+
+// Later, once you're confident in the release
+for (const percentage of [25, 50, 100]) {
+	await store.setDeployPercentage(percentage, token);
+}
 ```
 
-## Tips
+## Error handling
 
-- If you plan to upload _and_ publish at the same time, use the `fetchToken` method, and pass it to both `uploadExisting` and `publish` as the optional second parameter. This will avoid those methods making duplicate calls for new tokens.
+Methods reject when the API returns an error or when the upload fails. API errors are thrown as `CWSError`.
+
+```ts
+import chromeWebstoreUpload, {CWSError} from 'chrome-webstore-upload';
+
+try {
+	await store.uploadExisting('./dist', undefined, 120);
+	await store.publish();
+} catch (error) {
+	if (error instanceof CWSError) {
+		console.error('Chrome Web Store API error:', error);
+	} else {
+		console.error('Release failed:', error);
+	}
+
+	process.exitCode = 1;
+}
+```
 
 ## Related
 
-- [webext-storage-cache](https://github.com/fregante/webext-storage-cache) - Map-like promised cache storage with expiration. Chrome and Firefox
-- [webext-dynamic-content-scripts](https://github.com/fregante/webext-dynamic-content-scripts) - Automatically registers your content_scripts on domains added via permission.request
-- [Awesome-WebExtensions](https://github.com/fregante/Awesome-WebExtensions) - A curated list of awesome resources for WebExtensions development.
+- [chrome-webstore-upload-cli](https://github.com/fregante/chrome-webstore-upload-cli) - Command line interface for this module
+- [chrome-webstore-upload-keys](https://github.com/fregante/chrome-webstore-upload-keys) - Generate the Google API keys
+- [webext-storage-cache](https://github.com/fregante/webext-storage-cache) - Map-like promised cache storage with expiration
+- [webext-dynamic-content-scripts](https://github.com/fregante/webext-dynamic-content-scripts) - Automatically registers your `content_scripts` on domains added via `permission.request`
+- [Awesome-WebExtensions](https://github.com/fregante/Awesome-WebExtensions) - A curated list of awesome resources for WebExtensions development
 - [More…](https://github.com/fregante/webext-fun)
