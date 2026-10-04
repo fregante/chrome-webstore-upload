@@ -206,7 +206,3 @@ try {
 - [webext-dynamic-content-scripts](https://github.com/fregante/webext-dynamic-content-scripts) - Automatically registers your `content_scripts` on domains added via `permission.request`
 - [Awesome-WebExtensions](https://github.com/fregante/Awesome-WebExtensions) - A curated list of awesome resources for WebExtensions development
 - [More…](https://github.com/fregante/webext-fun)
-
-## License
-
-MIT
